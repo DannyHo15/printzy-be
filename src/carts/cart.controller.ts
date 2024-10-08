@@ -6,50 +6,72 @@ import {
   Delete,
   Put,
   Get,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { RemoveCartItemDto } from './dto/remove-cart-item.dto';
+import { JWTGuard } from '@appauthentication/jwt.guard';
+import { RolesGuard } from '@apputils/guards/roles.guard';
+import { Roles } from '@apputils/decorators/role.decorator';
 
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  @Get(':userId')
-  getCart(@Param('userId') userId: number) {
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @Get('')
+  getCart(@Req() { user }) {
+    const userId = user.id;
     return this.cartService.getCartByUser(userId);
   }
 
-  @Post(':userId/add')
-  addToCart(
-    @Param('userId') userId: number,
-    @Body() addToCartDto: AddToCartDto,
-  ) {
-    const { productId, quantity } = addToCartDto;
-    return this.cartService.addToCart(userId, productId, quantity);
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @Post('add')
+  addToCart(@Req() { user }, @Body() addToCartDto: AddToCartDto) {
+    const userId = user.id;
+    const { productId, quantity, customizeUploadId } = addToCartDto;
+    return this.cartService.addToCart(
+      userId,
+      productId,
+      quantity,
+      customizeUploadId,
+    );
   }
 
-  @Put(':userId/update')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @Put('update')
   updateCartItem(
-    @Param('userId') userId: number,
+    @Req() { user },
     @Body() updateCartItemDto: UpdateCartItemDto,
   ) {
+    const userId = user.id;
     const { productId, quantity } = updateCartItemDto;
     return this.cartService.updateCartItem(userId, productId, quantity);
   }
 
-  @Delete(':userId/remove')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @Delete('remove')
   removeCartItem(
-    @Param('userId') userId: number,
+    @Req() { user },
     @Body() removeCartItemDto: RemoveCartItemDto,
   ) {
+    const userId = user.id;
     const { productId } = removeCartItemDto;
     return this.cartService.removeCartItem(userId, productId);
   }
 
-  @Delete(':userId/clear')
-  clearCart(@Param('userId') userId: number) {
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @Delete('clear')
+  clearCart(@Req() { user }) {
+    const userId = user.id;
     return this.cartService.clearCart(userId);
   }
 }

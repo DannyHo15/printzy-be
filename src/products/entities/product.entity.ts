@@ -13,6 +13,8 @@ import { Purchase } from 'src/purchases/entities/purchase.entity';
 import { Upload } from 'src/uploads/entities/upload.entity';
 import { Photo } from 'src/photos/entities/photo.entity';
 import { Wishlist } from '@appwishlists/entities/wishlists.entity';
+import { UserReview } from '@appreviews/entities/review.entity';
+import { Variant } from '@appvariants/entities/variant.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -28,34 +30,17 @@ export class Product {
   @Column('text')
   description: string;
 
-  // Adding properties specific to e-commerce clothing and accessories
   @Column({ nullable: true })
-  size: string; // For shirts, phone cases, etc.
+  sku: string;
 
   @Column({ nullable: true })
-  color: string; // For customizable items
-
-  @Column({ nullable: true })
-  material: string; // For material of products like mugs, cases, etc.
+  slug: string;
 
   @Column('boolean', { default: true })
   isAvailable: boolean;
 
   @Column('int', { nullable: true })
-  stock: number; // Amount of stock available
-
-  // Dimensions specific for products like phone cases or glasses
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  height: number;
-
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  width: number;
-
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  length: number;
-
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  weight: number; // Weight for shipping calculation
+  stock: number;
 
   @ManyToOne(() => Category, (category) => category.products, {
     onDelete: 'CASCADE',
@@ -87,12 +72,16 @@ export class Product {
   })
   photos: Photo[];
 
-  // OneToMany relationship with Wishlist
   @OneToMany(() => Wishlist, (wishlist) => wishlist.product, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   wishlists: Wishlist[];
+
+  @OneToMany(() => Variant, (variant) => variant.product, {
+    cascade: true,
+  })
+  variants: Variant[];
 
   @Column({ nullable: true })
   uploadId: number;
@@ -105,4 +94,10 @@ export class Product {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => UserReview, (review) => review.product, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  reviews: UserReview[];
 }

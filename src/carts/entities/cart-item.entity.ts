@@ -1,6 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { Cart } from './cart.entity';
+import { CustomizeUpload } from '@appcustomize-uploads/entities/customize-upload.entity';
 
 @Entity({ name: 'cart_items' })
 export class CartItem {
@@ -20,6 +28,13 @@ export class CartItem {
     onDelete: 'CASCADE',
   })
   cart: Cart;
+
+  @OneToOne(() => CustomizeUpload, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn()
+  customizeUpload: CustomizeUpload;
 
   @Column()
   productId: number;

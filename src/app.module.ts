@@ -19,6 +19,10 @@ import { OrdersCountChartModule } from '@charts/orders-count-chart/orders-count-
 import { CartModule } from '@appcarts/cart.module';
 import { ormConfig } from './ormconfig';
 import { WishlistModule } from '@appwishlists/wishlists.module';
+import { CustomizeUploadsModule } from '@appcustomize-uploads/customize-uploads.module';
+import { ReviewsModule } from '@appreviews/reviews.module';
+import { OptionsModule } from '@appoptions/option.module';
+import { VariantsModule } from '@appvariants/variant.module';
 
 @Module({
   imports: [
@@ -40,6 +44,10 @@ import { WishlistModule } from '@appwishlists/wishlists.module';
     OrdersCountChartModule,
     CartModule,
     WishlistModule,
+    CustomizeUploadsModule,
+    ReviewsModule,
+    OptionsModule,
+    VariantsModule,
   ],
   controllers: [],
   providers: [],

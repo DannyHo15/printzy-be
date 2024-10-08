@@ -8,6 +8,10 @@ export class AddToCartDto {
 
   @ApiProperty()
   @IsInt()
+  customizeUploadId: number;
+
+  @ApiProperty()
+  @IsInt()
   @IsPositive()
   quantity: number;
 }

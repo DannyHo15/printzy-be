@@ -44,6 +44,22 @@ export class ProductsService {
     return product;
   }
 
+  public async findOneBySlugAndSKU(input: string) {
+    const lastHyphenIndex = input.lastIndexOf('-');
+    const slug = input.substring(0, lastHyphenIndex);
+    const sku = input.substring(lastHyphenIndex + 1);
+    const product = await this.productsRepository.findOne({
+      where: { slug, sku },
+      relations: ['photos.upload'],
+    });
+
+    if (!product) {
+      throw new UnprocessableEntityException('Product is not found');
+    }
+
+    return product;
+  }
+
   public async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productsRepository.findOne({
       where: { id },

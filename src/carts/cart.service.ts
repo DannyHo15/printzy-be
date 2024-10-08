@@ -5,6 +5,7 @@ import { Cart } from './entities/cart.entity';
 import { CartItem } from './entities/cart-item.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { User } from 'src/users/entities/user.entity';
+import { CustomizeUpload } from '@appcustomize-uploads/entities/customize-upload.entity';
 
 @Injectable()
 export class CartService {
@@ -15,6 +16,8 @@ export class CartService {
     private cartItemRepository: Repository<CartItem>,
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
+    @InjectRepository(CustomizeUpload)
+    private customizeUploadRepository: Repository<CustomizeUpload>,
   ) {}
 
   async getCartByUser(userId: number): Promise<Cart> {
@@ -35,6 +38,7 @@ export class CartService {
     userId: number,
     productId: number,
     quantity: number,
+    customizeUploadId: number,
   ): Promise<Cart> {
     const cart = await this.getCartByUser(userId);
     const product = await this.productRepository.findOne({
@@ -53,11 +57,17 @@ export class CartService {
       existingCartItem.quantity += quantity;
       await this.cartItemRepository.save(existingCartItem);
     } else {
+      const customizeUpload = await this.customizeUploadRepository.findOne({
+        where: { id: customizeUploadId },
+      });
+
       const cartItem = this.cartItemRepository.create({
         product,
         cart,
         quantity,
+        customizeUpload,
       });
+
       cart.cartItems.push(cartItem);
       await this.cartItemRepository.save(cartItem);
     }

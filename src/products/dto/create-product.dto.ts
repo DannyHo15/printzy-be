@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -22,6 +21,11 @@ export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
   description: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  sku: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -56,10 +60,6 @@ export class CreateProductDto {
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
   weight?: number; // Optional weight for shipping purposes
-
-  @ApiProperty()
-  @IsDateString()
-  birthdate: Date;
 
   @ApiProperty()
   @IsNotEmpty()

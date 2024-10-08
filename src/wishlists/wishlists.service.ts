@@ -10,10 +10,6 @@ import { User } from '@appusers/entities/user.entity';
 import { Product } from '@appproducts/entities/product.entity';
 import { AddToWishlistDto } from './dto/add-to-wishlist.dto';
 import { RemoveFromWishlistDto } from './dto/remove-from-wishlist.dto';
-import {
-  WishlistItemDto,
-  WishlistResponseDto,
-} from './dto/wish-list-response.dto';
 
 @Injectable()
 export class WishlistService {
@@ -90,23 +86,12 @@ export class WishlistService {
   /**
    * Get the user's wishlist
    */
-  async getWishlist(userId: number): Promise<WishlistResponseDto> {
+  async getWishlist(userId: number) {
     // Find all wishlist items for the user
     const wishlistItems = await this.wishlistRepository.find({
       where: { user: { id: userId } },
       relations: ['product'], // Load the related products
     });
-
-    // Map the wishlist items to the response DTO
-    const wishlistDtoItems: WishlistItemDto[] = wishlistItems.map(
-      (wishlistItem) => ({
-        productId: wishlistItem.product.id,
-        name: wishlistItem.product.name,
-        price: wishlistItem.product.price,
-        description: wishlistItem.product.description,
-      }),
-    );
-
-    return { items: wishlistDtoItems };
+    return wishlistItems;
   }
 }

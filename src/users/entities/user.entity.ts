@@ -12,6 +12,7 @@ import { Client } from '@clients/entities/client.entity'; // Import Cart entity
 import { Role } from '@app/declarations';
 import { Cart } from '@appcarts/entities/cart.entity';
 import { Wishlist } from '@appwishlists/entities/wishlists.entity';
+import { UserReview } from '@appreviews/entities/review.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -60,4 +61,10 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => UserReview, (review) => review.user, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  reviews: UserReview[];
 }

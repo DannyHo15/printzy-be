@@ -39,6 +39,11 @@ export class ProductsController {
     return this.productsService.findOne(+id);
   }
 
+  @Get('/detail/:slug')
+  public async findOneBySlugAndSKU(@Param('slug') slug: string) {
+    return this.productsService.findOneBySlugAndSKU(slug);
+  }
+
   @UseGuards(JWTGuard, RolesGuard)
   @Roles('admin')
   @Patch(':id')
