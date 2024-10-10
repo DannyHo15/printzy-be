@@ -1,12 +1,15 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VariantOptionValue } from './variant-option-value.entity';
 import { Product } from '@appproducts/entities/product.entity';
+import { Upload } from '@appuploads/entities/upload.entity';
 
 @Entity({ name: 'variants' })
 export class Variant {
@@ -28,6 +31,9 @@ export class Variant {
   @Column('int')
   stock: number; // Stock specific to the variant
 
+  @Column()
+  sku: string;
+
   @OneToMany(
     () => VariantOptionValue,
     (variantOptionValue) => variantOptionValue.variant,
@@ -36,4 +42,12 @@ export class Variant {
     },
   )
   variantOptionValues: VariantOptionValue[];
+
+  // One-to-one relationship with Upload
+  @OneToOne(() => Upload, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  upload: Upload;
 }
