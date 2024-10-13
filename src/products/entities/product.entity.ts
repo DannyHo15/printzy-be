@@ -25,14 +25,14 @@ export class Product {
   @Column('decimal', { precision: 30, scale: 2 })
   price: number;
 
+  @Column('decimal', { precision: 30, scale: 2, nullable: true })
+  discountPrice: number;
+
   @Column()
   name: string;
 
   @Column('text')
   description: string;
-
-  @Column({ nullable: true })
-  sku: string;
 
   @Column({ nullable: true })
   slug: string;

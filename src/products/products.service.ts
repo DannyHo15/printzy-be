@@ -73,13 +73,9 @@ export class ProductsService {
   }
 
   // Fetch product by slug and SKU, including collection relation
-  public async findOneBySlugAndSKU(input: string) {
-    const lastHyphenIndex = input.lastIndexOf('-');
-    const slug = input.substring(0, lastHyphenIndex);
-    const sku = input.substring(lastHyphenIndex + 1);
-
+  public async findOneBySlug(slug: string) {
     const product = await this.productsRepository.findOne({
-      where: { slug, sku },
+      where: { slug },
       relations: ['photos.upload', 'collection'], // Add collection relation
     });
 

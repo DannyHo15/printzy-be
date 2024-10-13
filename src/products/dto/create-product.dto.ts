@@ -25,17 +25,12 @@ export class CreateProductDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  sku?: string; // SKU is optional in the entity
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
   slug?: string; // Slug is defined in the entity but missing in DTO
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, default: true })
   @IsOptional()
   @IsBoolean()
-  isAvailable?: boolean; // Optional availability status
+  isAvailable?: boolean; // Optional availability status, defaults to true
 
   @ApiProperty({ required: false })
   @IsOptional()
@@ -57,43 +52,13 @@ export class CreateProductDto {
   @IsNumber({ allowNaN: false, allowInfinity: false })
   uploadId?: number; // Optional upload association
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, default: false })
   @IsOptional()
   @IsBoolean()
-  isDeleted?: boolean; // Optional flag for soft deletion
-
-  // Additional fields for dimensions and variations
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  size?: string; // Optional size for shirts, phone cases, etc.
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  color?: string; // Optional color for product variations
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  material?: string; // Optional material description
-
-  @ApiProperty()
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  height: number;
+  isDeleted?: boolean; // Optional flag for soft deletion, defaults to false
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
-  width?: number; // Optional width for certain product types
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  length?: number; // Optional length for certain product types
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  weight?: number; // Optional weight for shipping purposes
+  discountPrice?: number; // Optional discount price
 }

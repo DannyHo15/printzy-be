@@ -40,8 +40,8 @@ export class ProductsController {
   }
 
   @Get('/detail/:slug')
-  public async findOneBySlugAndSKU(@Param('slug') slug: string) {
-    return this.productsService.findOneBySlugAndSKU(slug);
+  public async findOneBySlug(@Param('slug') slug: string) {
+    return this.productsService.findOneBySlug(slug);
   }
 
   @UseGuards(JWTGuard, RolesGuard)
