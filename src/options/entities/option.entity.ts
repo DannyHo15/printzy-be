@@ -9,6 +9,9 @@ export class Option {
   @Column()
   name: string; // e.g., color, size
 
+  @Column()
+  productId: number; // e.g., color, size
+
   @OneToMany(() => OptionValue, (optionValue) => optionValue.option, {
     cascade: true,
   })

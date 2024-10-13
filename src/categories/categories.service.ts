@@ -31,8 +31,10 @@ export class CategoriesService {
       delete findOptions.take;
     }
 
-    const [data, total] =
-      await this.categoriesRepository.findAndCount(findOptions);
+    const [data, total] = await this.categoriesRepository.findAndCount({
+      ...findOptions,
+      relations: ['collections'],
+    });
 
     return {
       $limit: findOptions.take,

@@ -1,6 +1,7 @@
 import {
   Equal,
   FindManyOptions,
+  FindOptionsWhere,
   ILike,
   In,
   LessThan,
@@ -15,15 +16,11 @@ import { DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_SKIP } from './variables';
 
 import { IQuery } from '@app/declarations';
 
-export const mapQueryToFindOptions = ({
-  $limit,
-  $skip,
-  $order,
-  ...where
-}: IQuery): FindManyOptions => {
+export const mapQueryToFindOptions = <T>(query: IQuery): FindManyOptions<T> => {
+  const { $limit, $skip, $order, ...where } = query;
   const whereEntries = Object.entries(where);
 
-  const mappedWhere = Object.fromEntries(
+  const mappedWhere: FindOptionsWhere<T> = Object.fromEntries(
     whereEntries
       .filter(([, value]) => {
         try {
@@ -101,7 +98,7 @@ export const mapQueryToFindOptions = ({
 
         return [key, parsedValue];
       }),
-  );
+  ) as FindOptionsWhere<T>; // Assert mappedWhere to FindOptionsWhere<T>
 
   return {
     take: +$limit || DEFAULT_PAGINATION_LIMIT,

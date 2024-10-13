@@ -34,31 +34,11 @@ export class FindProductDto {
 
   @ApiProperty()
   @IsOptional()
-  height?: number | IFieldQuery<number>; // Search based on height
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  size?: string | IFieldQuery<string>; // Optional size filter for shirts, phone cases, etc.
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  color?: string | IFieldQuery<string>; // Optional color filter
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  material?: string | IFieldQuery<string>; // Optional material filter
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  weight?: number | IFieldQuery<number>; // Optional weight filter for shipping or product dimensions
-
-  @ApiProperty()
-  @IsOptional()
-  birthdate?: Date | IFieldQuery<Date>; // Search based on birthdate
-
-  @ApiProperty()
-  @IsOptional()
   categoryId?: number; // Filter based on category ID
+
+  @ApiProperty()
+  @IsOptional()
+  collectionId?: number;
 
   @ApiProperty()
   @IsOptional()

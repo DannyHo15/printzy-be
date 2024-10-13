@@ -1,19 +1,21 @@
 // src/variants/dto/create-variant.dto.ts
 import {
-  IsNotEmpty,
-  IsDecimal,
   IsInt,
   IsArray,
   ValidateNested,
   IsString,
   IsOptional,
+  IsNumber,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateVariantDto {
   @ApiProperty()
-  @IsDecimal()
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Price must be a valid number with up to 2 decimal places' },
+  )
   price: number;
 
   @ApiProperty()

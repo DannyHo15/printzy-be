@@ -36,9 +36,9 @@ export class OptionsService {
   }
 
   // Find a single option by ID, including its values
-  async findOne(id: number): Promise<Option | undefined> {
-    return this.optionRepository.findOne({
-      where: { id },
+  async findByProductId(id: number): Promise<Option[] | undefined> {
+    return this.optionRepository.find({
+      where: { productId: id },
       relations: ['optionValues'],
     });
   }

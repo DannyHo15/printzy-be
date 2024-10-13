@@ -30,11 +30,11 @@ export class OptionsController {
   }
 
   // Get a single option by ID, including its values
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    const option = await this.optionsService.findOne(id);
+  @Get(':productId')
+  async findByProductId(@Param('productId') id: number) {
+    const option = await this.optionsService.findByProductId(id);
     if (!option) {
-      throw new NotFoundException(`Option with ID ${id} not found`);
+      throw new NotFoundException(`Option with Product ID ${id} not found`);
     }
     return option;
   }

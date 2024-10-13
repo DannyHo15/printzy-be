@@ -15,6 +15,7 @@ import { Photo } from 'src/photos/entities/photo.entity';
 import { Wishlist } from '@appwishlists/entities/wishlists.entity';
 import { UserReview } from '@appreviews/entities/review.entity';
 import { Variant } from '@appvariants/entities/variant.entity';
+import { Collection } from '@appcollections/entities/collection.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -50,6 +51,17 @@ export class Product {
 
   @Column()
   categoryId: number;
+
+  // Each product belongs to one collection
+  @ManyToOne(() => Collection, (collection) => collection.products, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    nullable: true,
+  })
+  collection: Collection;
+
+  @Column({ nullable: true })
+  collectionId: number;
 
   @OneToMany(() => Purchase, (purchase) => purchase.product, {
     onDelete: 'CASCADE',
