@@ -7,22 +7,36 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  Req,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UserReview } from './entities/review.entity';
+import { JWTGuard } from '@appauthentication/jwt.guard';
+import { RolesGuard } from '@apputils/guards/roles.guard';
+import { Roles } from '@apputils/decorators/role.decorator';
+import { FindReviewProductDto } from './dto/find-review-product.dto';
 
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
+  @Get()
+  public async findAll(@Query() query: FindReviewProductDto) {
+    return this.reviewsService.findAll(query);
+  }
+
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
   @Post()
   async create(
     @Body() createReviewDto: CreateReviewDto,
-    @Request() req,
+    @Req() { user },
   ): Promise<UserReview> {
-    const userId = req.user.id; // Assuming you have user ID in request
+    const userId = user.id;
     return this.reviewsService.createReview(createReviewDto, userId);
   }
 

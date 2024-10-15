@@ -6,6 +6,8 @@ import { UserReview } from './entities/review.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
+import mapQueryToFindOptions from '@apputils/map-query-to-find-options';
+import { FindReviewProductDto } from './dto/find-review-product.dto';
 
 @Injectable()
 export class ReviewsService {
@@ -60,6 +62,23 @@ export class ReviewsService {
   async getReviewsByProduct(productId: number): Promise<UserReview[]> {
     return await this.userReviewRepository.find({
       where: { product: { id: productId } },
+      relations: ['user'],
     });
+  }
+
+  public async findAll(query: FindReviewProductDto) {
+    const findOptions = mapQueryToFindOptions(query);
+
+    const [data, total] = await this.userReviewRepository.findAndCount({
+      ...findOptions,
+      relations: ['product'], // Add collection relation
+    });
+
+    return {
+      $limit: findOptions.take,
+      $skip: findOptions.skip,
+      total,
+      data,
+    };
   }
 }
