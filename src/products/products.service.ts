@@ -8,6 +8,10 @@ import { FindProductDto } from './dto/find-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { Collection } from '@appcollections/entities/collection.entity'; // Import Collection entity
+import { ProductOptionValue } from './entities/product-option-value.entity';
+import { ProductOption } from './entities/product-option.entity';
+import { Option } from '@appoptions/entities/option.entity';
+import { OptionValue } from '@appoptions/entities/option-value.entity';
 
 @Injectable()
 export class ProductsService {
@@ -15,13 +19,20 @@ export class ProductsService {
     @InjectRepository(Product) private productsRepository: Repository<Product>,
     @InjectRepository(Collection)
     private collectionsRepository: Repository<Collection>, // Inject Collection repository
+    @InjectRepository(ProductOptionValue)
+    private productOptionValuesRepository: Repository<ProductOptionValue>,
+    @InjectRepository(ProductOption)
+    private productOptionsRepository: Repository<ProductOption>,
+    @InjectRepository(Option)
+    private optionsRepository: Repository<Option>,
+    @InjectRepository(OptionValue)
+    private optionValuesRepository: Repository<OptionValue>,
   ) {}
 
   // Create a product and optionally associate it with a collection
   public async create(createProductDto: CreateProductDto) {
     let collection = null;
 
-    // If a collectionId is provided, find the collection
     if (createProductDto.collectionId) {
       collection = await this.collectionsRepository.findOne({
         where: { id: createProductDto.collectionId },
@@ -32,13 +43,50 @@ export class ProductsService {
       }
     }
 
-    // Create the product and associate it with the collection if applicable
     const product = this.productsRepository.create({
       ...createProductDto,
       collection,
     });
 
-    return this.productsRepository.save(product);
+    const savedProduct = await this.productsRepository.save(product);
+
+    // Handle Product Options and Option Values
+    if (createProductDto.options) {
+      for (const optionDto of createProductDto.options) {
+        // Create ProductOption
+        const productOption = this.productOptionsRepository.create({
+          product: savedProduct,
+          option: await this.optionsRepository.findOne({
+            where: { id: optionDto.optionId },
+          }), // Assuming `optionId` is passed
+        });
+
+        const savedOption =
+          await this.productOptionsRepository.save(productOption);
+
+        // Save each option's values
+        for (const optionValueDto of optionDto.values) {
+          // Ensure optionValueDto contains a valid ID, fetch the corresponding OptionValue entity
+          const optionValue = await this.optionValuesRepository.findOne({
+            where: { id: optionValueDto }, // Assuming it's the ID of OptionValue
+          });
+
+          if (!optionValue) {
+            throw new UnprocessableEntityException('OptionValue not found');
+          }
+
+          // Create ProductOptionValue
+          const productOptionValue = this.productOptionValuesRepository.create({
+            productOption: savedOption,
+            optionValue: optionValue, // Use the actual OptionValue entity
+          });
+
+          await this.productOptionValuesRepository.save(productOptionValue);
+        }
+      }
+    }
+
+    return savedProduct;
   }
 
   // Fetch all products based on query parameters, with optional collections
@@ -62,7 +110,11 @@ export class ProductsService {
   public async findOne(id: number) {
     const product = await this.productsRepository.findOne({
       where: { id },
-      relations: ['collection'], // Include collection
+      relations: [
+        'collection',
+        'productOptions',
+        'productOptions.productOptionValues.optionValue',
+      ], // Include collection
     });
 
     if (!product) {
@@ -76,7 +128,13 @@ export class ProductsService {
   public async findOneBySlug(slug: string) {
     const product = await this.productsRepository.findOne({
       where: { slug },
-      relations: ['photos.upload', 'collection'], // Add collection relation
+      relations: [
+        'category',
+        'photos.upload',
+        'collection',
+        'productOptions.option',
+        'productOptions.productOptionValues.optionValue',
+      ],
     });
 
     if (!product) {
@@ -114,6 +172,69 @@ export class ProductsService {
       ...updateProductDto,
       collection, // Associate the collection if applicable
     });
+
+    // Handle update of product options and option values if provided
+    if (updateProductDto.options) {
+      for (const optionDto of updateProductDto.options) {
+        // Find existing option by optionId rather than name
+        const existingOption = await this.productOptionsRepository.findOne({
+          where: { product: { id }, option: { id: optionDto.optionId } },
+        });
+
+        if (existingOption) {
+          // Update existing product option
+          await this.productOptionsRepository.save({
+            id: existingOption.id,
+            product: updatedProduct,
+            option: { id: optionDto.optionId },
+          });
+
+          // Handle option values update or creation
+          for (const optionValueDto of optionDto.values) {
+            const existingOptionValue =
+              await this.productOptionValuesRepository.findOne({
+                where: {
+                  productOption: existingOption,
+                  optionValue: { id: optionValueDto }, // Assuming option value is unique by value
+                },
+              });
+
+            if (existingOptionValue) {
+              // Update existing product option value
+              await this.productOptionValuesRepository.save({
+                id: existingOptionValue.id,
+                optionValue: { id: optionValueDto },
+                productOption: existingOption,
+              });
+            } else {
+              // Create new product option value
+              const newOptionValue = this.productOptionValuesRepository.create({
+                productOption: existingOption,
+                optionValue: { id: optionValueDto },
+              });
+              await this.productOptionValuesRepository.save(newOptionValue);
+            }
+          }
+        } else {
+          // Create new product option if it does not exist
+          const newOption = this.productOptionsRepository.create({
+            product: updatedProduct,
+            option: { id: optionDto.optionId },
+          });
+          const savedOption =
+            await this.productOptionsRepository.save(newOption);
+
+          // Create new option values for this option
+          for (const optionValueDto of optionDto.values) {
+            const newOptionValue = this.productOptionValuesRepository.create({
+              productOption: savedOption,
+              optionValue: { id: optionValueDto },
+            });
+            await this.productOptionValuesRepository.save(newOptionValue);
+          }
+        }
+      }
+    }
 
     return updatedProduct;
   }

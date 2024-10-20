@@ -35,14 +35,6 @@ export class OptionsService {
     return this.optionRepository.find({ relations: ['optionValues'] });
   }
 
-  // Find a single option by ID, including its values
-  async findByProductId(id: number): Promise<Option[] | undefined> {
-    return this.optionRepository.find({
-      where: { productId: id },
-      relations: ['optionValues'],
-    });
-  }
-
   // Update an option with its values
   async update(id: number, updateOptionDto: UpdateOptionDto): Promise<Option> {
     const { name, values } = updateOptionDto;

@@ -34,12 +34,13 @@ export class CartController {
   @Post('add')
   addToCart(@Req() { user }, @Body() addToCartDto: AddToCartDto) {
     const userId = user.id;
-    const { productId, quantity, customizeUploadId } = addToCartDto;
+    const { productId, quantity, customizeUploadId, variantId } = addToCartDto; // Include variantId
     return this.cartService.addToCart(
       userId,
       productId,
       quantity,
       customizeUploadId,
+      variantId, // Pass variantId to service
     );
   }
 
@@ -51,8 +52,13 @@ export class CartController {
     @Body() updateCartItemDto: UpdateCartItemDto,
   ) {
     const userId = user.id;
-    const { productId, quantity } = updateCartItemDto;
-    return this.cartService.updateCartItem(userId, productId, quantity);
+    const { productId, quantity, variantId } = updateCartItemDto; // Include variantId
+    return this.cartService.updateCartItem(
+      userId,
+      productId,
+      quantity,
+      variantId,
+    ); // Pass variantId to service
   }
 
   @UseGuards(JWTGuard, RolesGuard)
@@ -63,8 +69,8 @@ export class CartController {
     @Body() removeCartItemDto: RemoveCartItemDto,
   ) {
     const userId = user.id;
-    const { productId } = removeCartItemDto;
-    return this.cartService.removeCartItem(userId, productId);
+    const { productId, variantId } = removeCartItemDto;
+    return this.cartService.removeCartItem(userId, productId, variantId);
   }
 
   @UseGuards(JWTGuard, RolesGuard)

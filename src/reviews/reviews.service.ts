@@ -71,7 +71,7 @@ export class ReviewsService {
 
     const [data, total] = await this.userReviewRepository.findAndCount({
       ...findOptions,
-      relations: ['product'], // Add collection relation
+      relations: ['product', 'user'], // Add collection relation
     });
 
     return {

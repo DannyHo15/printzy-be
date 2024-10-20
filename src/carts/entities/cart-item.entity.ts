@@ -9,6 +9,7 @@ import {
 import { Product } from 'src/products/entities/product.entity';
 import { Cart } from './cart.entity';
 import { CustomizeUpload } from '@appcustomize-uploads/entities/customize-upload.entity';
+import { Variant } from '@appvariants/entities/variant.entity';
 
 @Entity({ name: 'cart_items' })
 export class CartItem {
@@ -28,6 +29,10 @@ export class CartItem {
     onDelete: 'CASCADE',
   })
   cart: Cart;
+
+  @OneToOne(() => Variant, { nullable: true })
+  @JoinColumn()
+  variant: Variant;
 
   @OneToOne(() => CustomizeUpload, {
     onDelete: 'SET NULL',

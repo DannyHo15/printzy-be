@@ -14,11 +14,14 @@ export class UserReview {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  title: string;
+
   @Column('text')
-  review: string; // The review content
+  review: string;
 
   @Column('int')
-  rating: number; // Rating out of 5
+  rating: number;
 
   @ManyToOne(() => User, (user) => user.reviews, {
     onDelete: 'CASCADE',

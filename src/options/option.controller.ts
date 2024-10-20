@@ -29,16 +29,6 @@ export class OptionsController {
     return this.optionsService.findAll();
   }
 
-  // Get a single option by ID, including its values
-  @Get(':productId')
-  async findByProductId(@Param('productId') id: number) {
-    const option = await this.optionsService.findByProductId(id);
-    if (!option) {
-      throw new NotFoundException(`Option with Product ID ${id} not found`);
-    }
-    return option;
-  }
-
   // Update an option and its values
   @Patch(':id')
   async update(

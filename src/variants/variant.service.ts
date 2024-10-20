@@ -18,7 +18,6 @@ export class VariantsService {
     private readonly uploadRepository: Repository<Upload>,
   ) {}
 
-  // Create a new variant with optional upload and variant option values
   async create(
     createVariantDto: CreateVariantDto,
     productId: number,
@@ -45,7 +44,6 @@ export class VariantsService {
 
     await this.variantRepository.save(variant);
 
-    // Save associated option values
     for (const optionValueDto of createVariantDto.optionValues) {
       const variantOptionValue = this.variantOptionValueRepository.create({
         variant,
@@ -61,7 +59,7 @@ export class VariantsService {
   async findOne(id: number): Promise<Variant> {
     const variant = await this.variantRepository.findOne({
       where: { id },
-      relations: ['variantOptionValues', 'upload', 'product'], // Ensure relations are loaded
+      relations: ['variantOptionValues', 'upload', 'product'],
     });
 
     if (!variant) {

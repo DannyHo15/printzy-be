@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
 import { CartItem } from './entities/cart-item.entity';
 import { Product } from 'src/products/entities/product.entity';
-import { User } from 'src/users/entities/user.entity';
 import { CustomizeUpload } from '@appcustomize-uploads/entities/customize-upload.entity';
+import { Variant } from '@appvariants/entities/variant.entity';
 
 @Injectable()
 export class CartService {
@@ -18,12 +18,18 @@ export class CartService {
     private productRepository: Repository<Product>,
     @InjectRepository(CustomizeUpload)
     private customizeUploadRepository: Repository<CustomizeUpload>,
+    @InjectRepository(Variant)
+    private variantRepository: Repository<Variant>, // Inject Variant repository
   ) {}
 
   async getCartByUser(userId: number): Promise<Cart> {
     let cart = await this.cartRepository.findOne({
       where: { userId },
-      relations: ['cartItems', 'cartItems.product'],
+      relations: [
+        'cartItems',
+        'cartItems.product',
+        'cartItems.variant.variantOptionValues.optionValue',
+      ],
     });
 
     if (!cart) {
@@ -38,7 +44,8 @@ export class CartService {
     userId: number,
     productId: number,
     quantity: number,
-    customizeUploadId: number,
+    customizeUploadId?: number,
+    variantId?: number, // Add variantId as an optional parameter
   ): Promise<Cart> {
     const cart = await this.getCartByUser(userId);
     const product = await this.productRepository.findOne({
@@ -49,23 +56,36 @@ export class CartService {
       throw new Error('Product not found');
     }
 
+    let variant = null;
+    if (variantId) {
+      variant = await this.variantRepository.findOne({
+        where: { id: variantId },
+      });
+      if (!variant) {
+        throw new Error('Variant not found');
+      }
+    }
+
     const existingCartItem = cart.cartItems.find(
-      (item) => item.product.id === productId,
+      (item) => item.product.id === productId && item.variant?.id === variantId, // Check if same product and variant
     );
 
     if (existingCartItem) {
       existingCartItem.quantity += quantity;
       await this.cartItemRepository.save(existingCartItem);
     } else {
-      const customizeUpload = await this.customizeUploadRepository.findOne({
-        where: { id: customizeUploadId },
-      });
+      const customizeUpload = customizeUploadId
+        ? await this.customizeUploadRepository.findOne({
+            where: { id: customizeUploadId },
+          })
+        : null;
 
       const cartItem = this.cartItemRepository.create({
         product,
         cart,
         quantity,
         customizeUpload,
+        variant, // Assign variant to the cart item
       });
 
       cart.cartItems.push(cartItem);
@@ -79,14 +99,15 @@ export class CartService {
     userId: number,
     productId: number,
     quantity: number,
+    variantId?: number, // Add variantId for updating the specific variant
   ): Promise<Cart> {
     const cart = await this.getCartByUser(userId);
     const cartItem = cart.cartItems.find(
-      (item) => item.product.id === productId,
+      (item) => item.product.id === productId && item.variant?.id === variantId, // Find cart item by product and variant
     );
 
     if (!cartItem) {
-      throw new Error('Product not in cart');
+      throw new Error('Product or variant not in cart');
     }
 
     cartItem.quantity = quantity;
@@ -95,19 +116,23 @@ export class CartService {
     return cart;
   }
 
-  async removeCartItem(userId: number, productId: number): Promise<Cart> {
+  async removeCartItem(
+    userId: number,
+    productId: number,
+    variantId?: number,
+  ): Promise<Cart> {
     const cart = await this.getCartByUser(userId);
     const cartItem = cart.cartItems.find(
-      (item) => item.product.id === productId,
+      (item) => item.product.id === productId && item.variant?.id === variantId, // Find by both product and variant
     );
 
     if (!cartItem) {
-      throw new Error('Product not in cart');
+      throw new Error('Product or variant not in cart');
     }
 
     await this.cartItemRepository.remove(cartItem);
     cart.cartItems = cart.cartItems.filter(
-      (item) => item.product.id !== productId,
+      (item) => item.product.id !== productId || item.variant?.id !== variantId, // Filter out the specific item
     );
 
     return this.cartRepository.save(cart);

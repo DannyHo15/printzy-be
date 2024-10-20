@@ -16,6 +16,7 @@ import { Wishlist } from '@appwishlists/entities/wishlists.entity';
 import { UserReview } from '@appreviews/entities/review.entity';
 import { Variant } from '@appvariants/entities/variant.entity';
 import { Collection } from '@appcollections/entities/collection.entity';
+import { ProductOption } from './product-option.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -112,4 +113,10 @@ export class Product {
     onUpdate: 'CASCADE',
   })
   reviews: UserReview[];
+
+  // One-to-Many relationship with ProductOption
+  @OneToMany(() => ProductOption, (productOption) => productOption.product, {
+    cascade: true,
+  })
+  productOptions: ProductOption[];
 }

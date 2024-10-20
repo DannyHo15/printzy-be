@@ -22,8 +22,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  // @UseGuards(JWTGuard, RolesGuard)
+  // @Roles('admin')
   @Post()
   public async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);

@@ -12,6 +12,10 @@ import { MIN_PASSWORD_LENGTH } from '@utils/variables';
 
 export class CreateUserDto {
   @ApiProperty()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
   @IsEmail()
   email: string;
 

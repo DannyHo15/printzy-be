@@ -5,7 +5,26 @@ import {
   IsOptional,
   IsString,
   IsBoolean,
+  IsArray,
+  ValidateNested,
+  ArrayNotEmpty,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+
+// DTO for product options
+class ProductOptionDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  optionId: number;
+
+  @ApiProperty({ type: [Number] })
+  @IsNotEmpty()
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
+  values: number[];
+}
 
 export class CreateProductDto {
   @ApiProperty()
@@ -25,7 +44,7 @@ export class CreateProductDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  slug?: string; // Slug is defined in the entity but missing in DTO
+  slug?: string; // Optional slug
 
   @ApiProperty({ required: false, default: true })
   @IsOptional()
@@ -61,4 +80,12 @@ export class CreateProductDto {
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
   discountPrice?: number; // Optional discount price
+
+  // New field for product options
+  @ApiProperty({ type: [ProductOptionDto], required: false })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductOptionDto)
+  options?: ProductOptionDto[]; // Optional array of product options
 }
