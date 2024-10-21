@@ -20,8 +20,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   const documentConfig = new DocumentBuilder()
-    .setTitle('Bonsay')
-    .setDescription('Bonsay API description.')
+    .setTitle('Printzy')
+    .setDescription('Printzy API description.')
     .build();
 
   const document = SwaggerModule.createDocument(app, documentConfig);

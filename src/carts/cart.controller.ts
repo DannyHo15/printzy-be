@@ -16,7 +16,9 @@ import { RemoveCartItemDto } from './dto/remove-cart-item.dto';
 import { JWTGuard } from '@appauthentication/jwt.guard';
 import { RolesGuard } from '@apputils/guards/roles.guard';
 import { Roles } from '@apputils/decorators/role.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('cart')
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}

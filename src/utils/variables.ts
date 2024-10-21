@@ -26,3 +26,14 @@ export const ORDER_STATUSES = [
   'completed',
   'cancelled',
 ] as const;
+
+export enum ERole {
+  ADMIN = 'admin',
+  CLIENT = 'client',
+}
+
+export enum EGender {
+  MALE = 'male',
+  FEMALE = 'female',
+  OTHER = 'other',
+}

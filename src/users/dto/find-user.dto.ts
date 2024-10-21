@@ -31,4 +31,8 @@ export class FindUserDto {
   @ApiProperty()
   @IsOptional()
   updatedAt?: Date | IFieldQuery<Date>;
+
+  @ApiProperty()
+  @IsOptional()
+  name?: string | IFieldQuery<string>;
 }
