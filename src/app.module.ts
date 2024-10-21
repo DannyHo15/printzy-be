@@ -23,6 +23,7 @@ import { CustomizeUploadsModule } from '@appcustomize-uploads/customize-uploads.
 import { ReviewsModule } from '@appreviews/reviews.module';
 import { OptionsModule } from '@appoptions/option.module';
 import { VariantsModule } from '@appvariants/variant.module';
+import { CollectionModule } from '@appcollections/collections.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { VariantsModule } from '@appvariants/variant.module';
     ReviewsModule,
     OptionsModule,
     VariantsModule,
+    CollectionModule,
   ],
   controllers: [],
   providers: [],
