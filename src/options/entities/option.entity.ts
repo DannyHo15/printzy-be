@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { OptionValue } from './option-value.entity';
-import { ProductOption } from '@appproducts/entities/product-option.entity';
+import { ProductOption } from '@app/products/entities/product-option.entity';
 
 @Entity({ name: 'options' })
 export class Option {

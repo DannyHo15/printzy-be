@@ -15,9 +15,9 @@ import {
 import { ReviewsService } from './reviews.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UserReview } from './entities/review.entity';
-import { JWTGuard } from '@appauthentication/jwt.guard';
-import { RolesGuard } from '@apputils/guards/roles.guard';
-import { Roles } from '@apputils/decorators/role.decorator';
+import { JWTGuard } from '@app/authentication/jwt.guard';
+import { RolesGuard } from '@app/utils/guards/roles.guard';
+import { Roles } from '@app/utils/decorators/role.decorator';
 import { FindReviewProductDto } from './dto/find-review-product.dto';
 
 @Controller('reviews')

@@ -10,11 +10,12 @@ import {
 import { RefreshToken } from '@authentication/entities/refresh-token.entity';
 import { Client } from '@clients/entities/client.entity'; // Import Cart entity
 import { Role, Gender } from '@app/declarations';
-import { Cart } from '@appcarts/entities/cart.entity';
-import { Wishlist } from '@appwishlists/entities/wishlists.entity';
-import { UserReview } from '@appreviews/entities/review.entity';
-import { EGender, ERole } from '@apputils/variables';
+import { Cart } from '@app/carts/entities/cart.entity';
+import { Wishlist } from '@app/wishlists/entities/wishlists.entity';
+import { UserReview } from '@app/reviews/entities/review.entity';
+import { EGender, ERole } from '@app/utils/variables';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
@@ -49,6 +50,7 @@ export class User {
   lastName: string;
 
   @Column({ select: false })
+  @Exclude()
   password: string;
 
   @Column({ type: 'enum', enum: ERole, default: 'client' })

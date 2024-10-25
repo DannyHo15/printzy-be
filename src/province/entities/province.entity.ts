@@ -1,11 +1,18 @@
-import { District } from '@appdistrict/entities/district.entity';
-import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { District } from '@app/district/entities/district.entity';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@ApiTags('province')
+@Entity({
+  name: 'province',
+})
 export class Province {
   @ApiProperty({ description: 'The unique code of the province', example: 1 })
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ApiProperty({})
+  @Column()
   code: number;
 
   @ApiProperty({
@@ -33,7 +40,7 @@ export class Province {
   @Column()
   phone_code: number;
 
-  @OneToMany(() => District, (district) => district)
+  @OneToMany(() => District, (district) => district.province)
   @ApiProperty({
     description: 'The districts in the province',
     type: () => [District],

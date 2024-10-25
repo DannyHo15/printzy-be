@@ -8,8 +8,8 @@ import {
 } from 'typeorm';
 import { Product } from 'src/products/entities/product.entity';
 import { Cart } from './cart.entity';
-import { CustomizeUpload } from '@appcustomize-uploads/entities/customize-upload.entity';
-import { Variant } from '@appvariants/entities/variant.entity';
+import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
+import { Variant } from '@app/variants/entities/variant.entity';
 
 @Entity({ name: 'cart_items' })
 export class CartItem {

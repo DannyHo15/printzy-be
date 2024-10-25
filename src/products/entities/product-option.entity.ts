@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from './product.entity';
-import { Option } from '@appoptions/entities/option.entity';
+import { Option } from '@app/options/entities/option.entity';
 import { ProductOptionValue } from './product-option-value.entity';
 
 @Entity({ name: 'product_options' })

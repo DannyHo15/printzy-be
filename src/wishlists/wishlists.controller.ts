@@ -11,9 +11,9 @@ import {
 import { AddToWishlistDto } from './dto/add-to-wishlist.dto';
 import { RemoveFromWishlistDto } from './dto/remove-from-wishlist.dto';
 import { WishlistService } from './wishlists.service';
-import { JWTGuard } from '@appauthentication/jwt.guard';
-import { RolesGuard } from '@apputils/guards/roles.guard';
-import { Roles } from '@apputils/decorators/role.decorator';
+import { JWTGuard } from '@app/authentication/jwt.guard';
+import { RolesGuard } from '@app/utils/guards/roles.guard';
+import { Roles } from '@app/utils/decorators/role.decorator';
 
 @Controller('wishlists')
 export class WishlistController {

@@ -4,8 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WishlistController } from './wishlists.controller';
 import { WishlistService } from './wishlists.service';
 import { Wishlist } from './entities/wishlists.entity';
-import { Product } from '@appproducts/entities/product.entity';
-import { User } from '@appusers/entities/user.entity';
+import { Product } from '@app/products/entities/product.entity';
+import { User } from '@app/users/entities/user.entity';
 
 @Module({
   imports: [

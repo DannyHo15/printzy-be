@@ -5,7 +5,7 @@ import { Variant } from './entities/variant.entity';
 import { VariantOptionValue } from './entities/variant-option-value.entity';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto'; // Create this DTO for updating
-import { Upload } from '@appuploads/entities/upload.entity';
+import { Upload } from '@app/uploads/entities/upload.entity';
 
 @Injectable()
 export class VariantsService {

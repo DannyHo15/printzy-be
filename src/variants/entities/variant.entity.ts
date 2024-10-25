@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { VariantOptionValue } from './variant-option-value.entity';
-import { Product } from '@appproducts/entities/product.entity';
-import { Upload } from '@appuploads/entities/upload.entity';
+import { Product } from '@app/products/entities/product.entity';
+import { Upload } from '@app/uploads/entities/upload.entity';
 
 @Entity({ name: 'variants' })
 export class Variant {

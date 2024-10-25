@@ -12,10 +12,10 @@ import { Category } from 'src/categories/entities/category.entity';
 import { Purchase } from 'src/purchases/entities/purchase.entity';
 import { Upload } from 'src/uploads/entities/upload.entity';
 import { Photo } from 'src/photos/entities/photo.entity';
-import { Wishlist } from '@appwishlists/entities/wishlists.entity';
-import { UserReview } from '@appreviews/entities/review.entity';
-import { Variant } from '@appvariants/entities/variant.entity';
-import { Collection } from '@appcollections/entities/collection.entity';
+import { Wishlist } from '@app/wishlists/entities/wishlists.entity';
+import { UserReview } from '@app/reviews/entities/review.entity';
+import { Variant } from '@app/variants/entities/variant.entity';
+import { Collection } from '@app/collections/entities/collection.entity';
 import { ProductOption } from './product-option.entity';
 
 @Entity({ name: 'products' })

@@ -6,8 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Wishlist } from './entities/wishlists.entity';
-import { User } from '@appusers/entities/user.entity';
-import { Product } from '@appproducts/entities/product.entity';
+import { User } from '@app/users/entities/user.entity';
+import { Product } from '@app/products/entities/product.entity';
 import { AddToWishlistDto } from './dto/add-to-wishlist.dto';
 import { RemoveFromWishlistDto } from './dto/remove-from-wishlist.dto';
 

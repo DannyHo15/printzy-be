@@ -23,11 +23,12 @@ import { CustomizeUploadsModule } from '@app/customize-uploads/customize-uploads
 import { ReviewsModule } from '@app/reviews/reviews.module';
 import { OptionsModule } from '@app/options/option.module';
 import { VariantsModule } from '@app/variants/variant.module';
-import { CollectionModule } from '@appcollections/collections.module';
+import { CollectionModule } from '@app/collections/collections.module';
 import { ProvinceModule } from './province/province.module';
 import { DistrictModule } from './district/district.module';
 import { WardModule } from './ward/ward.module';
 import { JsonAddressLoaderService } from './utils/services/json-address-loader/json-address-loader.service';
+import { SeedModule } from './database/relational/seed.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { JsonAddressLoaderService } from './utils/services/json-address-loader/j
     ProvinceModule,
     DistrictModule,
     WardModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [JsonAddressLoaderService],

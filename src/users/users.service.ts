@@ -40,8 +40,6 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    delete createdUser.password;
-
     return createdUser;
   }
 
