@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
@@ -15,13 +15,16 @@ async function bootstrap() {
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
   app.enableCors();
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
 
   app.useStaticAssets(join(__dirname, '..', 'public'), { prefix: '/api' });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   const documentConfig = new DocumentBuilder()
-    .setTitle('Bonsay')
-    .setDescription('Bonsay API description.')
+    .setTitle('Printzy')
+    .setDescription('Printzy API description.')
     .build();
 
   const document = SwaggerModule.createDocument(app, documentConfig);

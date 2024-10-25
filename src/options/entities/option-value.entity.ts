@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Option } from './option.entity';
-import { ProductOptionValue } from '@appproducts/entities/product-option-value.entity';
+import { ProductOptionValue } from '@app/products/entities/product-option-value.entity';
 
 @Entity({ name: 'option_values' })
 export class OptionValue {

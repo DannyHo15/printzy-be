@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
 import { CartItem } from './entities/cart-item.entity';
 import { Product } from 'src/products/entities/product.entity';
-import { CustomizeUpload } from '@appcustomize-uploads/entities/customize-upload.entity';
-import { Variant } from '@appvariants/entities/variant.entity';
+import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
+import { Variant } from '@app/variants/entities/variant.entity';
 
 @Injectable()
 export class CartService {

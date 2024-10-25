@@ -7,6 +7,6 @@ export const ormConfig: TypeOrmModuleOptions = {
   username: 'postgres',
   password: process.env.POSTGRES_PASSWORD,
   database: 'bonsay',
-  synchronize: true,
+  synchronize: true, //dont use in production
   autoLoadEntities: true,
 };

@@ -1,6 +1,9 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
+  InternalServerErrorException,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,8 +40,6 @@ export class UsersService {
       password: hashedPassword,
     });
 
-    delete createdUser.password;
-
     return createdUser;
   }
 
@@ -64,16 +65,59 @@ export class UsersService {
       throw new UnprocessableEntityException('User is not found');
     }
 
-    return user;
+    return {
+      ...user,
+      fullName: user.fullName,
+    };
+  }
+
+  public async changePassword(
+    currentUser: User,
+    currentPassword: string,
+    newPassword: string,
+    confirmNewPassword: string,
+  ) {
+    const isPasswordValid = await this.validateCredentials(
+      currentUser.id,
+      currentPassword,
+    );
+    const isPasswordNotChange = await this.validateCredentials(
+      currentUser.id,
+      newPassword,
+    );
+    const isConfirmPassworkNotMatch = await compare(
+      newPassword,
+      confirmNewPassword,
+    );
+    if (!isPasswordValid) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    if (isPasswordNotChange) {
+      throw new BadRequestException(
+        'New password must not be the same as the old password',
+      );
+    }
+
+    if (isConfirmPassworkNotMatch) {
+      throw new BadRequestException('Confirm password not match');
+    }
+
+    const hashedPassword = await hash(newPassword, await genSalt());
+
+    currentUser.password = hashedPassword;
+
+    return { message: 'Password changed successfully' };
   }
 
   public async update(id: number, updateUserDto: UpdateUserDto) {
+    const { password, confirmPassword, newPassword } = updateUserDto;
     const user = await this.usersRepository.findOne({
       where: { id },
     });
 
     if (!user) {
-      throw new UnprocessableEntityException('User is not found');
+      throw new NotFoundException('User is not found');
     }
 
     if (updateUserDto.email) {
@@ -82,23 +126,22 @@ export class UsersService {
       });
 
       if (existingUser && user.id !== existingUser.id) {
-        throw new BadRequestException('This email is already taken');
+        throw new ConflictException('This email is already taken');
       }
     }
+    if (password && newPassword && confirmPassword) {
+      await this.changePassword(user, password, newPassword, confirmPassword);
+    }
 
-    const hashedPassword = updateUserDto.password
-      ? await hash(updateUserDto.password, await genSalt())
-      : null;
-
-    const updatedUser = await this.usersRepository.save({
-      id,
-      ...updateUserDto,
-      ...(hashedPassword ? { password: hashedPassword } : {}),
-    });
-
-    delete updatedUser.password;
-
-    return updatedUser;
+    try {
+      const updatedUser = await this.usersRepository.save({
+        id,
+        ...updateUserDto,
+      });
+      return updatedUser;
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to update user');
+    }
   }
 
   public async remove(id: number) {

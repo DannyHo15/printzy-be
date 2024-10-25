@@ -14,20 +14,57 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "paths": {
-      "@app*": ["src/*"],
-      "@addresses*": ["src/addresses/*"],
-      "@authentication*": ["src/authentication/*"],
-      "@categories*": ["src/categories/*"],
-      "@clients*": ["src/clients/*"],
-      "@orders*": ["src/orders/*"],
-      "@payments*": ["src/payments/*"],
-      "@photos*": ["src/photos/*"],
-      "@products*": ["src/products/*"],
-      "@purchases*": ["src/purchases/*"],
-      "@uploads*": ["src/uploads/*"],
-      "@users*": ["src/users/*"],
-      "@utils*": ["src/utils/*"],
-      "@charts*": ["src/charts/*"]
+      "@app/*": [
+        "src/*"
+      ],
+      "@addresses*": [
+        "src/addresses/*"
+      ],
+      "@authentication*": [
+        "src/authentication/*"
+      ],
+      "@categories*": [
+        "src/categories/*"
+      ],
+      "@clients*": [
+        "src/clients/*"
+      ],
+      "@orders*": [
+        "src/orders/*"
+      ],
+      "@payments*": [
+        "src/payments/*"
+      ],
+      "@photos*": [
+        "src/photos/*"
+      ],
+      "@products*": [
+        "src/products/*"
+      ],
+      "@purchases*": [
+        "src/purchases/*"
+      ],
+      "@uploads*": [
+        "src/uploads/*"
+      ],
+      "@users*": [
+        "src/users/*"
+      ],
+      "@utils*": [
+        "src/utils/*"
+      ],
+      "@province/*": [
+        "src/province/*"
+      ],
+      "@district/*": [
+        "src/district/*"
+      ],
+      "@ward/*": [
+        "src/ward/*"
+      ],
+      "@charts*": [
+        "src/charts/*"
+      ]
     }
   }
 }

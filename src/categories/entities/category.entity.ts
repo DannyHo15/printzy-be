@@ -10,7 +10,7 @@ import {
 
 import { Product } from '@products/entities/product.entity';
 import { Upload } from '@uploads/entities/upload.entity';
-import { Collection } from '@appcollections/entities/collection.entity';
+import { Collection } from '@app/collections/entities/collection.entity';
 
 @Entity({ name: 'categories' })
 export class Category {

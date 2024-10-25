@@ -29,6 +29,7 @@ export interface RefreshTokenPayload {
 
 export type Role = 'admin' | 'client';
 
+export type Gender = 'male' | 'female' | 'other';
 export type Owner = 'user' | 'client';
 
 export type Status = 'wait' | 'success' | 'fail';

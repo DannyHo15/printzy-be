@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Variant } from './variant.entity';
-import { OptionValue } from '@appoptions/entities/option-value.entity';
+import { OptionValue } from '@app/options/entities/option-value.entity';
 
 @Entity({ name: 'variant_option_values' })
 export class VariantOptionValue {

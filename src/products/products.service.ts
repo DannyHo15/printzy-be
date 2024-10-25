@@ -7,11 +7,11 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { FindProductDto } from './dto/find-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
-import { Collection } from '@appcollections/entities/collection.entity'; // Import Collection entity
+import { Collection } from '@app/collections/entities/collection.entity'; // Import Collection entity
 import { ProductOptionValue } from './entities/product-option-value.entity';
 import { ProductOption } from './entities/product-option.entity';
-import { Option } from '@appoptions/entities/option.entity';
-import { OptionValue } from '@appoptions/entities/option-value.entity';
+import { Option } from '@app/options/entities/option.entity';
+import { OptionValue } from '@app/options/entities/option-value.entity';
 
 @Injectable()
 export class ProductsService {

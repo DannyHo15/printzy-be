@@ -5,6 +5,7 @@ import { User } from '@users/entities/user.entity';
 import { WEEK_MS } from '@utils/variables';
 import { AuthenticationDto } from './dto/authentication.dto';
 import { TokensService } from './tokens.service';
+import { ApiTags } from '@nestjs/swagger';
 
 interface RefreshRequest {
   refreshToken: string;
@@ -13,7 +14,7 @@ interface RefreshRequest {
 interface RevokeRequest {
   refreshToken: string;
 }
-
+@ApiTags('authentication')
 @Controller('authentication')
 export class AuthenticationController {
   private readonly usersService: UsersService;

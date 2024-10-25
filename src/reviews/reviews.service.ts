@@ -6,7 +6,7 @@ import { UserReview } from './entities/review.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { User } from 'src/users/entities/user.entity';
 import { Product } from 'src/products/entities/product.entity';
-import mapQueryToFindOptions from '@apputils/map-query-to-find-options';
+import mapQueryToFindOptions from '@app/utils/map-query-to-find-options';
 import { FindReviewProductDto } from './dto/find-review-product.dto';
 
 @Injectable()
