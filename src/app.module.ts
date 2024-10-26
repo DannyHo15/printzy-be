@@ -27,7 +27,6 @@ import { CollectionModule } from '@app/collections/collections.module';
 import { ProvinceModule } from './province/province.module';
 import { DistrictModule } from './district/district.module';
 import { WardModule } from './ward/ward.module';
-import { JsonAddressLoaderService } from './utils/services/json-address-loader/json-address-loader.service';
 import { SeedModule } from './database/relational/seed.module';
 
 @Module({
@@ -61,6 +60,6 @@ import { SeedModule } from './database/relational/seed.module';
     SeedModule,
   ],
   controllers: [],
-  providers: [JsonAddressLoaderService],
+  providers: [],
 })
 export class AppModule {}
