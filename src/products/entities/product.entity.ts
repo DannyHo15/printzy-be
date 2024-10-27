@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Category } from 'src/categories/entities/category.entity';
 import { Purchase } from 'src/purchases/entities/purchase.entity';
 import { Upload } from 'src/uploads/entities/upload.entity';
 import { Photo } from 'src/photos/entities/photo.entity';
@@ -17,6 +16,7 @@ import { UserReview } from '@app/reviews/entities/review.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
 import { Collection } from '@app/collections/entities/collection.entity';
 import { ProductOption } from './product-option.entity';
+import { CategoryProduct } from './category-product.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -44,14 +44,11 @@ export class Product {
   @Column('int', { nullable: true })
   stock: number;
 
-  @ManyToOne(() => Category, (category) => category.products, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  category: Category;
-
-  @Column()
-  categoryId: number;
+  @OneToMany(
+    () => CategoryProduct,
+    (categoryProduct) => categoryProduct.product,
+  )
+  categoryProducts: CategoryProduct[];
 
   // Each product belongs to one collection
   @ManyToOne(() => Collection, (collection) => collection.products, {

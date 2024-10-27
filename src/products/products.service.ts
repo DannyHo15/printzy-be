@@ -1,6 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import mapQueryToFindOptions from '@utils/map-query-to-find-options';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -12,6 +12,8 @@ import { ProductOptionValue } from './entities/product-option-value.entity';
 import { ProductOption } from './entities/product-option.entity';
 import { Option } from '@app/options/entities/option.entity';
 import { OptionValue } from '@app/options/entities/option-value.entity';
+import { CategoryProduct } from './entities/category-product.entity';
+import { Category } from '@app/categories/entities/category.entity';
 
 @Injectable()
 export class ProductsService {
@@ -27,9 +29,12 @@ export class ProductsService {
     private optionsRepository: Repository<Option>,
     @InjectRepository(OptionValue)
     private optionValuesRepository: Repository<OptionValue>,
+    @InjectRepository(CategoryProduct)
+    private categoryProductRepository: Repository<CategoryProduct>,
+    @InjectRepository(Category)
+    private categoriesRepository: Repository<Category>,
   ) {}
 
-  // Create a product and optionally associate it with a collection
   public async create(createProductDto: CreateProductDto) {
     let collection = null;
 
@@ -37,7 +42,6 @@ export class ProductsService {
       collection = await this.collectionsRepository.findOne({
         where: { id: createProductDto.collectionId },
       });
-
       if (!collection) {
         throw new UnprocessableEntityException('Collection not found');
       }
@@ -50,53 +54,43 @@ export class ProductsService {
 
     const savedProduct = await this.productsRepository.save(product);
 
-    // Handle Product Options and Option Values
-    if (createProductDto.options) {
-      for (const optionDto of createProductDto.options) {
-        // Create ProductOption
-        const productOption = this.productOptionsRepository.create({
-          product: savedProduct,
-          option: await this.optionsRepository.findOne({
-            where: { id: optionDto.optionId },
-          }), // Assuming `optionId` is passed
-        });
-
-        const savedOption =
-          await this.productOptionsRepository.save(productOption);
-
-        // Save each option's values
-        for (const optionValueDto of optionDto.values) {
-          // Ensure optionValueDto contains a valid ID, fetch the corresponding OptionValue entity
-          const optionValue = await this.optionValuesRepository.findOne({
-            where: { id: optionValueDto }, // Assuming it's the ID of OptionValue
-          });
-
-          if (!optionValue) {
-            throw new UnprocessableEntityException('OptionValue not found');
-          }
-
-          // Create ProductOptionValue
-          const productOptionValue = this.productOptionValuesRepository.create({
-            productOption: savedOption,
-            optionValue: optionValue, // Use the actual OptionValue entity
-          });
-
-          await this.productOptionValuesRepository.save(productOptionValue);
-        }
-      }
-    }
+    await this.assignCategories(createProductDto.categoryIds, savedProduct);
+    await this.assignProductOptions(createProductDto.options, savedProduct);
 
     return savedProduct;
   }
 
-  // Fetch all products based on query parameters, with optional collections
   public async findAll(query: FindProductDto) {
-    const findOptions = mapQueryToFindOptions(query);
+    const { options, ...otherQueryParams } = query;
+    const findOptions = mapQueryToFindOptions(otherQueryParams);
 
-    const [data, total] = await this.productsRepository.findAndCount({
-      ...findOptions,
-      relations: ['collection'], // Add collection relation
-    });
+    findOptions.relations = [
+      'collection',
+      'productOptions',
+      'productOptions.option',
+      'productOptions.productOptionValues',
+      'productOptions.productOptionValues.optionValue',
+    ];
+
+    if (options) {
+      findOptions.where = {
+        ...findOptions.where,
+        productOptions: {
+          productOptionValues: {
+            optionValue: {
+              id: In(
+                Object.keys(options).flatMap((optionName) =>
+                  options[optionName].split(',').map((id) => parseInt(id, 10)),
+                ),
+              ),
+            },
+          },
+        },
+      };
+    }
+
+    const [data, total] =
+      await this.productsRepository.findAndCount(findOptions);
 
     return {
       $limit: findOptions.take,
@@ -106,7 +100,6 @@ export class ProductsService {
     };
   }
 
-  // Fetch a single product by ID with collection relation
   public async findOne(id: number) {
     const product = await this.productsRepository.findOne({
       where: { id },
@@ -114,7 +107,7 @@ export class ProductsService {
         'collection',
         'productOptions',
         'productOptions.productOptionValues.optionValue',
-      ], // Include collection
+      ],
     });
 
     if (!product) {
@@ -124,7 +117,6 @@ export class ProductsService {
     return product;
   }
 
-  // Fetch product by slug and SKU, including collection relation
   public async findOneBySlug(slug: string) {
     const product = await this.productsRepository.findOne({
       where: { slug },
@@ -144,7 +136,6 @@ export class ProductsService {
     return product;
   }
 
-  // Update a product and optionally associate it with a new collection
   public async update(id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productsRepository.findOne({
       where: { id },
@@ -156,12 +147,10 @@ export class ProductsService {
 
     let collection = null;
 
-    // If collectionId is provided, fetch the collection
     if (updateProductDto.collectionId) {
       collection = await this.collectionsRepository.findOne({
         where: { id: updateProductDto.collectionId },
       });
-
       if (!collection) {
         throw new UnprocessableEntityException('Collection not found');
       }
@@ -170,76 +159,14 @@ export class ProductsService {
     const updatedProduct = await this.productsRepository.save({
       id,
       ...updateProductDto,
-      collection, // Associate the collection if applicable
+      collection,
     });
 
-    // Handle update of product options and option values if provided
-    if (updateProductDto.options) {
-      for (const optionDto of updateProductDto.options) {
-        // Find existing option by optionId rather than name
-        const existingOption = await this.productOptionsRepository.findOne({
-          where: { product: { id }, option: { id: optionDto.optionId } },
-        });
-
-        if (existingOption) {
-          // Update existing product option
-          await this.productOptionsRepository.save({
-            id: existingOption.id,
-            product: updatedProduct,
-            option: { id: optionDto.optionId },
-          });
-
-          // Handle option values update or creation
-          for (const optionValueDto of optionDto.values) {
-            const existingOptionValue =
-              await this.productOptionValuesRepository.findOne({
-                where: {
-                  productOption: existingOption,
-                  optionValue: { id: optionValueDto }, // Assuming option value is unique by value
-                },
-              });
-
-            if (existingOptionValue) {
-              // Update existing product option value
-              await this.productOptionValuesRepository.save({
-                id: existingOptionValue.id,
-                optionValue: { id: optionValueDto },
-                productOption: existingOption,
-              });
-            } else {
-              // Create new product option value
-              const newOptionValue = this.productOptionValuesRepository.create({
-                productOption: existingOption,
-                optionValue: { id: optionValueDto },
-              });
-              await this.productOptionValuesRepository.save(newOptionValue);
-            }
-          }
-        } else {
-          // Create new product option if it does not exist
-          const newOption = this.productOptionsRepository.create({
-            product: updatedProduct,
-            option: { id: optionDto.optionId },
-          });
-          const savedOption =
-            await this.productOptionsRepository.save(newOption);
-
-          // Create new option values for this option
-          for (const optionValueDto of optionDto.values) {
-            const newOptionValue = this.productOptionValuesRepository.create({
-              productOption: savedOption,
-              optionValue: { id: optionValueDto },
-            });
-            await this.productOptionValuesRepository.save(newOptionValue);
-          }
-        }
-      }
-    }
+    await this.assignProductOptions(updateProductDto.options, updatedProduct);
 
     return updatedProduct;
   }
 
-  // Soft delete a product by marking it as deleted
   public async remove(id: number) {
     const product = await this.findOne(id);
 
@@ -249,5 +176,63 @@ export class ProductsService {
     });
 
     return product;
+  }
+
+  private async assignCategories(categoryIds: number[], product: Product) {
+    if (categoryIds && categoryIds.length > 0) {
+      for (const categoryId of categoryIds) {
+        const category = await this.categoriesRepository.findOne({
+          where: { id: categoryId },
+        });
+        if (!category) {
+          throw new UnprocessableEntityException(
+            `Category with ID ${categoryId} not found`,
+          );
+        }
+
+        const categoryProduct = this.categoryProductRepository.create({
+          product,
+          category,
+        });
+
+        await this.categoryProductRepository.save(categoryProduct);
+      }
+    }
+  }
+
+  private async assignProductOptions(optionsDto: any[], product: Product) {
+    if (optionsDto) {
+      for (const optionDto of optionsDto) {
+        const option = await this.optionsRepository.findOne({
+          where: { id: optionDto.optionId },
+        });
+        if (!option) {
+          throw new UnprocessableEntityException(`Option not found`);
+        }
+
+        const productOption = await this.productOptionsRepository.save(
+          this.productOptionsRepository.create({
+            product,
+            option,
+          }),
+        );
+
+        for (const optionValueId of optionDto.values) {
+          const optionValue = await this.optionValuesRepository.findOne({
+            where: { id: optionValueId },
+          });
+          if (!optionValue) {
+            throw new UnprocessableEntityException(`OptionValue not found`);
+          }
+
+          const productOptionValue = this.productOptionValuesRepository.create({
+            productOption,
+            optionValue,
+          });
+
+          await this.productOptionValuesRepository.save(productOptionValue);
+        }
+      }
+    }
   }
 }

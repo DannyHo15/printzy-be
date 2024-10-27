@@ -1,8 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { Product } from '@products/entities/product.entity';
+import { CategoryProduct } from '@app/products/entities/category-product.entity';
 import mapQueryToFindOptions from '@utils/map-query-to-find-options';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { FindCategoryDto } from './dto/find-category.dto';
@@ -14,11 +15,38 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private categoriesRepository: Repository<Category>,
-    @InjectConnection() private connection: Connection,
+    @InjectRepository(Product)
+    private productsRepository: Repository<Product>,
+    @InjectRepository(CategoryProduct)
+    private categoryProductRepository: Repository<CategoryProduct>,
   ) {}
 
   public async create(createCategoryDto: CreateCategoryDto) {
-    return this.categoriesRepository.save(createCategoryDto);
+    const { productIds, ...categoryData } = createCategoryDto;
+
+    const category = this.categoriesRepository.create(categoryData);
+
+    if (productIds && productIds.length > 0) {
+      const products = await this.productsRepository.findByIds(productIds);
+      if (products.length !== productIds.length) {
+        throw new UnprocessableEntityException(
+          'One or more products not found',
+        );
+      }
+
+      const categoryProducts = products.map((product) => {
+        const categoryProduct = new CategoryProduct();
+        categoryProduct.category = category;
+        categoryProduct.product = product;
+        return categoryProduct;
+      });
+
+      await this.categoriesRepository.save(category);
+
+      await this.categoryProductRepository.save(categoryProducts);
+    }
+
+    return category;
   }
 
   public async findAll(query: FindCategoryDto) {
@@ -33,7 +61,7 @@ export class CategoriesService {
 
     const [data, total] = await this.categoriesRepository.findAndCount({
       ...findOptions,
-      relations: ['collections'],
+      relations: ['categoryProducts', 'categoryProducts.product'],
     });
 
     return {
@@ -47,6 +75,7 @@ export class CategoriesService {
   public async findOne(id: number) {
     const category = await this.categoriesRepository.findOne({
       where: { id },
+      relations: ['categoryProducts', 'categoryProducts.product'],
     });
 
     if (!category) {
@@ -59,10 +88,33 @@ export class CategoriesService {
   public async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.categoriesRepository.findOne({
       where: { id },
+      relations: ['categoryProducts'],
     });
 
     if (!category) {
       throw new UnprocessableEntityException('Category is not found');
+    }
+
+    if (updateCategoryDto.productIds) {
+      const products = await this.productsRepository.findByIds(
+        updateCategoryDto.productIds,
+      );
+      if (products.length !== updateCategoryDto.productIds.length) {
+        throw new UnprocessableEntityException(
+          'One or more products not found',
+        );
+      }
+
+      await this.categoryProductRepository.delete({ category });
+
+      const categoryProducts = products.map((product) => {
+        const categoryProduct = new CategoryProduct();
+        categoryProduct.category = category;
+        categoryProduct.product = product;
+        return categoryProduct;
+      });
+
+      await this.categoryProductRepository.save(categoryProducts);
     }
 
     const updatedCategory = await this.categoriesRepository.save({
@@ -76,31 +128,18 @@ export class CategoriesService {
   public async remove(id: number) {
     const category = await this.categoriesRepository.findOne({
       where: { id },
-      relations: ['products'],
+      relations: ['categoryProducts'],
     });
 
     if (!category) {
       throw new UnprocessableEntityException('Category is not found');
     }
 
-    return new Promise((resolve) => {
-      this.connection.transaction(async (entityManager) => {
-        await Promise.all(
-          category.products.map(async ({ id }) => {
-            return await entityManager.save(Product, {
-              id,
-              isDeleted: true,
-            });
-          }),
-        );
+    await this.categoryProductRepository.delete({ category });
 
-        resolve(
-          await entityManager.save(Category, {
-            id,
-            isDeleted: true,
-          }),
-        );
-      });
+    return this.categoriesRepository.save({
+      ...category,
+      isDeleted: true,
     });
   }
 }

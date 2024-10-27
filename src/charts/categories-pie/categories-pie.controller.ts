@@ -12,8 +12,8 @@ import { FindCategoriesPieDto } from './dto/find-categories-pie-data.dto';
 export class CategoriesPieController {
   constructor(private readonly categoriesPieService: CategoriesPieService) {}
 
-  @Get()
-  public async get(@Query() query: FindCategoriesPieDto) {
-    return this.categoriesPieService.get(query);
-  }
+  // @Get()
+  // public async get(@Query() query: FindCategoriesPieDto) {
+  //   return this.categoriesPieService.get(query);
+  // }
 }

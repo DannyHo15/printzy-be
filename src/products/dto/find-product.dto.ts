@@ -1,40 +1,40 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { IsObject, IsOptional } from 'class-validator';
 
 import { IFieldQuery } from '@app/declarations';
 
 export class FindProductDto {
   @ApiProperty()
   @IsOptional()
-  $limit?: number; // Limit the number of results
+  $limit?: number;
 
   @ApiProperty()
   @IsOptional()
-  $skip?: number; // Skip a certain number of results
+  $skip?: number;
 
   @ApiProperty()
   @IsOptional()
-  id?: number | IFieldQuery<number>; // Search by product ID
+  id?: number | IFieldQuery<number>;
 
   @ApiProperty()
   @IsOptional()
-  price?: number | IFieldQuery<number>; // Search by price or apply conditions like ranges
+  price?: number | IFieldQuery<number>;
 
   @ApiProperty()
   @IsOptional()
-  name?: string | IFieldQuery<string>; // Search by product name with optional query conditions
+  name?: string | IFieldQuery<string>;
 
   @ApiProperty()
   @IsOptional()
-  isAvailable?: boolean | IFieldQuery<boolean>; // Filter based on availability
+  isAvailable?: boolean | IFieldQuery<boolean>;
 
   @ApiProperty()
   @IsOptional()
-  description?: string | IFieldQuery<string>; // Search by description
+  description?: string | IFieldQuery<string>;
 
   @ApiProperty()
   @IsOptional()
-  categoryId?: number; // Filter based on category ID
+  categoryId?: number;
 
   @ApiProperty()
   @IsOptional()
@@ -42,13 +42,17 @@ export class FindProductDto {
 
   @ApiProperty()
   @IsOptional()
-  uploadId?: number; // Filter based on associated upload ID
+  uploadId?: number;
 
   @ApiProperty()
   @IsOptional()
-  createdAt?: Date | IFieldQuery<Date>; // Search based on creation date
+  createdAt?: Date | IFieldQuery<Date>;
 
   @ApiProperty()
   @IsOptional()
-  updatedAt?: Date | IFieldQuery<Date>; // Search based on last update date
+  updatedAt?: Date | IFieldQuery<Date>;
+
+  @IsOptional()
+  @IsObject()
+  options?: Record<string, string>;
 }

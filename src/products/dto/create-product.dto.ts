@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-// DTO for product options
 class ProductOptionDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -44,48 +43,48 @@ export class CreateProductDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  slug?: string; // Optional slug
+  slug?: string;
 
   @ApiProperty({ required: false, default: true })
   @IsOptional()
   @IsBoolean()
-  isAvailable?: boolean; // Optional availability status, defaults to true
+  isAvailable?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
-  stock?: number; // Optional stock information
+  stock?: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: [Number] })
+  @IsArray()
   @IsNotEmpty()
-  @IsNumber()
-  categoryId: number; // CategoryId is required
+  @IsNumber({}, { each: true })
+  categoryIds: number[];
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
-  collectionId?: number; // Optional collection association
+  collectionId?: number;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
-  uploadId?: number; // Optional upload association
+  uploadId?: number;
 
   @ApiProperty({ required: false, default: false })
   @IsOptional()
   @IsBoolean()
-  isDeleted?: boolean; // Optional flag for soft deletion, defaults to false
+  isDeleted?: boolean;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
-  discountPrice?: number; // Optional discount price
+  discountPrice?: number;
 
-  // New field for product options
   @ApiProperty({ type: [ProductOptionDto], required: false })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ProductOptionDto)
-  options?: ProductOptionDto[]; // Optional array of product options
+  options?: ProductOptionDto[];
 }
