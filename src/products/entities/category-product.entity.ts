@@ -18,8 +18,4 @@ export class CategoryProduct {
     nullable: false,
   })
   product: Product;
-
-  // Bạn có thể thêm các cột bổ sung nếu cần, ví dụ:
-  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
-  addedAt: Date;
 }

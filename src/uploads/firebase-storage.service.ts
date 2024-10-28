@@ -13,7 +13,7 @@ export class FirebaseStorageService {
     }
   }
 
-  public async uploadFile(file: Express.Multer.File): Promise<string> {
+  public async uploadFile(file: any): Promise<string> {
     const bucket = admin.storage().bucket();
     const fileUpload = bucket.file(file.originalname);
 
@@ -24,15 +24,21 @@ export class FirebaseStorageService {
     });
 
     return new Promise((resolve, reject) => {
-      stream.on('finish', () => {
-        resolve(
-          `https://storage.googleapis.com/${process.env.FIREBASE_STORAGE_BUCKET}/${fileUpload.name}`,
-        );
+      stream.on('finish', async () => {
+        try {
+          // Make the file public
+          await fileUpload.makePublic();
+          resolve(
+            `https://storage.googleapis.com/${process.env.FIREBASE_STORAGE_BUCKET}/${fileUpload.name}`,
+          );
+        } catch (error) {
+          reject(error);
+        }
       });
       stream.on('error', (error) => {
         reject(error);
       });
-      stream.end(file.buffer); // Sử dụng buffer thay vì lưu vào đĩa
+      stream.end(file.buffer);
     });
   }
 }

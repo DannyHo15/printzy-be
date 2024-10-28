@@ -25,6 +25,7 @@ export class CategoriesService {
     const { productIds, ...categoryData } = createCategoryDto;
 
     const category = this.categoriesRepository.create(categoryData);
+    await this.categoriesRepository.save(category);
 
     if (productIds && productIds.length > 0) {
       const products = await this.productsRepository.findByIds(productIds);
@@ -40,8 +41,6 @@ export class CategoriesService {
         categoryProduct.product = product;
         return categoryProduct;
       });
-
-      await this.categoriesRepository.save(category);
 
       await this.categoryProductRepository.save(categoryProducts);
     }
