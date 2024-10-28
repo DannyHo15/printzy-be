@@ -7,29 +7,58 @@ import { CreateAddressDto } from './dto/create-address.dto';
 import { FindAddressDto } from './dto/find-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 import { Address } from './entities/address.entity';
+import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { AddressPaginateConfig } from './configs/address.config';
+import { Province } from '@app/province/entities/province.entity';
+import { District } from '@app/district/entities/district.entity';
+import { Ward } from '@app/ward/entities/ward.entity';
 
 @Injectable()
 export class AddressesService {
   constructor(
     @InjectRepository(Address) private addressesRepository: Repository<Address>,
+    @InjectRepository(Province)
+    private provincesRepository: Repository<Province>,
+    @InjectRepository(District)
+    private districtsRepository: Repository<District>,
+    @InjectRepository(Ward) private wardsRepository: Repository<Ward>,
   ) {}
 
   public async create(createAddressDto: CreateAddressDto) {
-    return this.addressesRepository.save(createAddressDto);
+    const province = await this.provincesRepository.findOne({
+      where: { id: createAddressDto.provinceId },
+    });
+    if (!province) {
+      throw new Error('Province not found');
+    }
+
+    const district = await this.districtsRepository.findOne({
+      where: { id: createAddressDto.districtId },
+    });
+    if (!district) {
+      throw new Error('District not found');
+    }
+
+    const ward = await this.wardsRepository.findOne({
+      where: { id: createAddressDto.wardId },
+    });
+    if (!ward) {
+      throw new Error('Ward not found');
+    }
+    const address = this.addressesRepository.create({
+      ...createAddressDto,
+      province,
+      district,
+      ward,
+    });
+    return this.addressesRepository.save(address);
   }
 
-  public async findAll(query: FindAddressDto) {
-    const findOptions = mapQueryToFindOptions(query);
-
-    const [data, total] =
-      await this.addressesRepository.findAndCount(findOptions);
-
-    return {
-      $limit: findOptions.take,
-      $skip: findOptions.skip,
-      total,
-      data,
-    };
+  public async findAll(
+    query: PaginateQuery,
+    userId: number,
+  ): Promise<Paginated<Address>> {
+    return paginate(query, this.addressesRepository, AddressPaginateConfig);
   }
 
   public async findOne(id: number) {

@@ -1,7 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { District } from '../../district/entities/district.entity';
 import { IsOptional } from 'class-validator';
+import { Address } from '@app/addresses/entities/address.entity';
 @ApiTags('District')
 @Entity({
   name: 'ward',
@@ -31,6 +38,11 @@ export class Ward {
     nullable: true,
   })
   district_code: number;
+  @OneToMany(() => Address, (address) => address.ward)
+  @ApiProperty({
+    type: () => [Address],
+  })
+  addresses: Address[];
 
   @ManyToOne(() => District, (district) => district.wards)
   @ApiProperty({
