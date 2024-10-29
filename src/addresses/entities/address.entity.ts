@@ -48,13 +48,13 @@ export class Address {
   })
   orders: Order[];
 
-  @ManyToOne(() => Province)
+  @ManyToOne(() => Province, (province) => province.addresses)
   province: Province;
 
-  @ManyToOne(() => District)
+  @ManyToOne(() => District, (district) => district.addresses)
   district: District;
 
-  @ManyToOne(() => Ward)
+  @ManyToOne(() => Ward, (ward) => ward.addresses)
   ward: Ward;
 
   @CreateDateColumn()

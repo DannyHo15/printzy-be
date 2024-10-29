@@ -17,6 +17,7 @@ RUN yarn
 # Copy the remaining application files
 COPY . .
 
+run yarn run prebuild
 run yarn build
 
 USER node
