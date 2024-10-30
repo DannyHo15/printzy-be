@@ -57,6 +57,10 @@ export class CategoriesService {
     if (isPaginationDisabled) {
       delete findOptions.take;
     }
+    findOptions.where = {
+      ...findOptions.where,
+      isDeleted: false,
+    };
 
     const [data, total] = await this.categoriesRepository.findAndCount({
       ...findOptions,

@@ -23,11 +23,6 @@ export class Category {
   @Column('text')
   description: string;
 
-  @OneToMany(() => Collection, (collection) => collection.category, {
-    cascade: true,
-  })
-  collections: Collection[];
-
   @OneToMany(
     () => CategoryProduct,
     (categoryProduct) => categoryProduct.category,

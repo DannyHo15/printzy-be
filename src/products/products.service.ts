@@ -14,6 +14,7 @@ import { Option } from '@app/options/entities/option.entity';
 import { OptionValue } from '@app/options/entities/option-value.entity';
 import { CategoryProduct } from './entities/category-product.entity';
 import { Category } from '@app/categories/entities/category.entity';
+import generateRandomSKU from '@app/utils/sku';
 
 @Injectable()
 export class ProductsService {
@@ -49,6 +50,7 @@ export class ProductsService {
 
     const product = this.productsRepository.create({
       ...createProductDto,
+      sku: generateRandomSKU(),
       collection,
     });
 
@@ -66,6 +68,7 @@ export class ProductsService {
 
     findOptions.relations = [
       'collection',
+      'categoryProducts.category',
       'productOptions',
       'productOptions.option',
       'productOptions.productOptionValues',
@@ -121,10 +124,33 @@ export class ProductsService {
     const product = await this.productsRepository.findOne({
       where: { slug },
       relations: [
-        'category',
-        'photos.upload',
         'collection',
+        'photos.upload',
+        'categoryProducts.category',
+        'productOptions',
         'productOptions.option',
+        'productOptions.productOptionValues',
+        'productOptions.productOptionValues.optionValue',
+      ],
+    });
+
+    if (!product) {
+      throw new UnprocessableEntityException('Product is not found');
+    }
+
+    return product;
+  }
+
+  public async findOneBySKU(sku: string) {
+    const product = await this.productsRepository.findOne({
+      where: { sku },
+      relations: [
+        'collection',
+        'photos.upload',
+        'categoryProducts.category',
+        'productOptions',
+        'productOptions.option',
+        'productOptions.productOptionValues',
         'productOptions.productOptionValues.optionValue',
       ],
     });

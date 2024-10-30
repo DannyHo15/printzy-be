@@ -38,11 +38,11 @@ export class Product {
   @Column({ nullable: true })
   slug: string;
 
+  @Column({ unique: true })
+  sku: string;
+
   @Column('boolean', { default: true })
   isAvailable: boolean;
-
-  @Column('int', { nullable: true })
-  stock: number;
 
   @OneToMany(
     () => CategoryProduct,

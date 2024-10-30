@@ -36,7 +36,7 @@ export class VariantsService {
 
     const variant = this.variantRepository.create({
       price: createVariantDto.price,
-      stock: createVariantDto.stock,
+      baseCost: createVariantDto.baseCost,
       product: { id: productId },
       sku: createVariantDto.sku,
       upload,
@@ -102,7 +102,6 @@ export class VariantsService {
 
     // Update the variant's basic details
     variant.price = updateVariantDto.price;
-    variant.stock = updateVariantDto.stock;
     variant.sku = updateVariantDto.sku;
     variant.upload = upload;
     await this.variantRepository.save(variant);

@@ -6,6 +6,7 @@ import {
   IsString,
   IsOptional,
   IsNumber,
+  IsBoolean,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -19,12 +20,20 @@ export class CreateVariantDto {
   price: number;
 
   @ApiProperty()
-  @IsInt()
-  stock: number;
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Price must be a valid number with up to 2 decimal places' },
+  )
+  baseCost: number;
 
   @ApiProperty()
   @IsString()
   sku: string;
+
+  @ApiProperty({ required: false, default: true })
+  @IsOptional()
+  @IsBoolean()
+  isAvailable?: boolean;
 
   @ApiProperty()
   @IsOptional()

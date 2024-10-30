@@ -50,11 +50,6 @@ export class CreateProductDto {
   @IsBoolean()
   isAvailable?: boolean;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  stock?: number;
-
   @ApiProperty({ type: [Number] })
   @IsArray()
   @IsNotEmpty()

@@ -22,8 +22,8 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
-  // @UseGuards(JWTGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @Post()
   public async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
@@ -39,8 +39,8 @@ export class CategoriesController {
     return this.categoriesService.findOne(+id);
   }
 
-  // @UseGuards(JWTGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':id')
   public async update(
     @Param('id') id: string,

@@ -22,8 +22,8 @@ import { UpdatePhotoDto } from './dto/update-photo.dto';
 export class PhotosController {
   constructor(private readonly photosService: PhotosService) {}
 
-  // @UseGuards(JWTGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @Post()
   public async create(@Body() createPhotoDto: CreatePhotoDto) {
     return this.photosService.create(createPhotoDto);

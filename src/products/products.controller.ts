@@ -22,8 +22,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  // @UseGuards(JWTGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @Post()
   public async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
@@ -42,6 +42,11 @@ export class ProductsController {
   @Get('/detail/:slug')
   public async findOneBySlug(@Param('slug') slug: string) {
     return this.productsService.findOneBySlug(slug);
+  }
+
+  @Get('/sku/:sku')
+  public async findOneBySKU(@Param('sku') sku: string) {
+    return this.productsService.findOneBySKU(sku);
   }
 
   @UseGuards(JWTGuard, RolesGuard)
