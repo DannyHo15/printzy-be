@@ -188,7 +188,7 @@ export class ProductsService {
       collection,
     });
 
-    await this.assignProductOptions(updateProductDto.options, updatedProduct);
+    await this.updateCategories(updateProductDto.categoryIds, updatedProduct);
 
     return updatedProduct;
   }
@@ -258,6 +258,44 @@ export class ProductsService {
 
           await this.productOptionValuesRepository.save(productOptionValue);
         }
+      }
+    }
+  }
+
+  private async updateCategories(categoryIds: number[], product: Product) {
+    const existingCategoryProducts = await this.categoryProductRepository.find({
+      where: { product: { id: product.id } },
+      relations: ['category'],
+    });
+
+    const existingCategoryIds = existingCategoryProducts.map(
+      (categoryProduct) => categoryProduct.category.id,
+    );
+
+    const categoriesToRemove = existingCategoryProducts.filter(
+      (categoryProduct) => !categoryIds.includes(categoryProduct.category.id),
+    );
+
+    if (categoriesToRemove.length > 0) {
+      await this.categoryProductRepository.remove(categoriesToRemove);
+    }
+
+    for (const categoryId of categoryIds) {
+      if (!existingCategoryIds.includes(categoryId)) {
+        const category = await this.categoriesRepository.findOne({
+          where: { id: categoryId },
+        });
+        if (!category) {
+          throw new UnprocessableEntityException(
+            `Category with ID ${categoryId} not found`,
+          );
+        }
+
+        const categoryProduct = this.categoryProductRepository.create({
+          product,
+          category,
+        });
+        await this.categoryProductRepository.save(categoryProduct);
       }
     }
   }

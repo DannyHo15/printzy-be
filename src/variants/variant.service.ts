@@ -39,6 +39,8 @@ export class VariantsService {
       baseCost: createVariantDto.baseCost,
       product: { id: productId },
       sku: createVariantDto.sku,
+      isAvailable: createVariantDto.isAvailable,
+      isInStock: createVariantDto.isInStock,
       upload,
     });
 
@@ -103,21 +105,23 @@ export class VariantsService {
     // Update the variant's basic details
     variant.price = updateVariantDto.price;
     variant.sku = updateVariantDto.sku;
+    variant.isAvailable = updateVariantDto.isAvailable;
+    variant.isInStock = updateVariantDto.isInStock;
     variant.upload = upload;
     await this.variantRepository.save(variant);
 
     // Update associated option values
-    if (updateVariantDto.optionValues) {
-      await this.variantOptionValueRepository.delete({ variant: { id } });
+    // if (updateVariantDto.optionValues) {
+    //   await this.variantOptionValueRepository.delete({ variant: { id } });
 
-      for (const optionValueDto of updateVariantDto.optionValues) {
-        const variantOptionValue = this.variantOptionValueRepository.create({
-          variant,
-          optionValue: { id: optionValueDto.valueId },
-        });
-        await this.variantOptionValueRepository.save(variantOptionValue);
-      }
-    }
+    //   for (const optionValueDto of updateVariantDto.optionValues) {
+    //     const variantOptionValue = this.variantOptionValueRepository.create({
+    //       variant,
+    //       optionValue: { id: optionValueDto.valueId },
+    //     });
+    //     await this.variantOptionValueRepository.save(variantOptionValue);
+    //   }
+    // }
 
     return variant;
   }

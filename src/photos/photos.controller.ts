@@ -29,6 +29,13 @@ export class PhotosController {
     return this.photosService.create(createPhotoDto);
   }
 
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
+  @Post('batch')
+  public async createMany(@Body() createPhotoDtos: CreatePhotoDto[]) {
+    return this.photosService.createMany(createPhotoDtos);
+  }
+
   @Get()
   public async findAll(@Query() query: FindPhotoDto) {
     return this.photosService.findAll(query);

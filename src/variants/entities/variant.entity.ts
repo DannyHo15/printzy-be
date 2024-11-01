@@ -37,6 +37,9 @@ export class Variant {
   @Column('boolean', { default: true })
   isAvailable: boolean;
 
+  @Column('boolean', { default: true })
+  isInStock: boolean;
+
   @OneToMany(
     () => VariantOptionValue,
     (variantOptionValue) => variantOptionValue.variant,

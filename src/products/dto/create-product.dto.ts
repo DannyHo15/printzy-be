@@ -71,10 +71,10 @@ export class CreateProductDto {
   @IsBoolean()
   isDeleted?: boolean;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, description: 'Discount percentage (0-100)' })
   @IsOptional()
   @IsNumber({ allowNaN: false, allowInfinity: false })
-  discountPrice?: number;
+  discountPercent?: number;
 
   @ApiProperty({ type: [ProductOptionDto], required: false })
   @IsOptional()

@@ -60,7 +60,8 @@ export class VariantsController {
     @Body() updateVariantDto: UpdateVariantDto,
   ) {
     const variant = await this.variantsService.update(id, updateVariantDto);
-    if (variant.product.id !== productId) {
+
+    if (variant.productId !== productId) {
       throw new NotFoundException(
         `Variant with ID ${id} not found for product with ID ${productId}`,
       );

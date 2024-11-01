@@ -35,6 +35,11 @@ export class CreateVariantDto {
   @IsBoolean()
   isAvailable?: boolean;
 
+  @ApiProperty({ required: false, default: true })
+  @IsOptional()
+  @IsBoolean()
+  isInStock?: boolean;
+
   @ApiProperty()
   @IsOptional()
   @IsInt()
