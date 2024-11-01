@@ -28,10 +28,9 @@ export class Address {
   @Column()
   addressDetail: string;
 
-  @Column()
-  postcode: string;
-
-  @Column()
+  @Column({
+    default: false,
+  })
   isDefault: boolean;
 
   @ManyToOne(() => Client, (client) => client.addresses, {
@@ -49,13 +48,13 @@ export class Address {
   })
   orders: Order[];
 
-  @ManyToOne(() => Province)
+  @ManyToOne(() => Province, (province) => province.addresses)
   province: Province;
 
-  @ManyToOne(() => District)
+  @ManyToOne(() => District, (district) => district.addresses)
   district: District;
 
-  @ManyToOne(() => Ward)
+  @ManyToOne(() => Ward, (ward) => ward.addresses)
   ward: Ward;
 
   @CreateDateColumn()
