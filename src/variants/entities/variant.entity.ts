@@ -26,13 +26,19 @@ export class Variant {
   productId: number;
 
   @Column('decimal', { precision: 30, scale: 2 })
-  price: number; // Price specific to the variant
+  price: number;
 
-  @Column('int')
-  stock: number; // Stock specific to the variant
+  @Column('decimal', { precision: 30, scale: 2 })
+  baseCost: number;
 
   @Column()
   sku: string;
+
+  @Column('boolean', { default: true })
+  isAvailable: boolean;
+
+  @Column('boolean', { default: true })
+  isInStock: boolean;
 
   @OneToMany(
     () => VariantOptionValue,
@@ -43,7 +49,6 @@ export class Variant {
   )
   variantOptionValues: VariantOptionValue[];
 
-  // One-to-one relationship with Upload
   @OneToOne(() => Upload, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

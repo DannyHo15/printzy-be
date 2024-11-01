@@ -8,9 +8,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Product } from '@products/entities/product.entity';
 import { Upload } from '@uploads/entities/upload.entity';
 import { Collection } from '@app/collections/entities/collection.entity';
+import { CategoryProduct } from '@app/products/entities/category-product.entity';
 
 @Entity({ name: 'categories' })
 export class Category {
@@ -23,16 +23,11 @@ export class Category {
   @Column('text')
   description: string;
 
-  @OneToMany(() => Collection, (collection) => collection.category, {
-    cascade: true,
-  })
-  collections: Collection[];
-
-  @OneToMany(() => Product, (product) => product.category, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  products: Product[];
+  @OneToMany(
+    () => CategoryProduct,
+    (categoryProduct) => categoryProduct.category,
+  )
+  categoryProducts: CategoryProduct[];
 
   @ManyToOne(() => Upload, (upload) => upload.categories, {
     onDelete: 'SET NULL',

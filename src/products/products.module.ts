@@ -9,6 +9,8 @@ import { OptionValue } from '@app/options/entities/option-value.entity';
 import { ProductOption } from './entities/product-option.entity';
 import { ProductOptionValue } from './entities/product-option-value.entity';
 import { Option } from '@app/options/entities/option.entity';
+import { CategoryProduct } from './entities/category-product.entity';
+import { Category } from '@app/categories/entities/category.entity';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { Option } from '@app/options/entities/option.entity';
       ProductOption,
       Option,
       OptionValue,
+      Category,
+      CategoryProduct,
     ]),
   ],
   controllers: [ProductsController],

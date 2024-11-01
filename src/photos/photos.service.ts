@@ -18,6 +18,33 @@ export class PhotosService {
     return this.photosRepository.save(createPhotoDto);
   }
 
+  public async createMany(createPhotoDtos: CreatePhotoDto[]) {
+    if (createPhotoDtos.length === 0) {
+      return [];
+    }
+
+    const productId = createPhotoDtos[0].productId;
+
+    // Delete existing photos with the specified productId
+    await this.photosRepository.delete({ productId });
+
+    const newPhotos = [];
+
+    for (const dto of createPhotoDtos) {
+      const { productId, uploadId } = dto;
+
+      const existingPhoto = await this.photosRepository.findOne({
+        where: { productId, uploadId },
+      });
+
+      if (!existingPhoto) {
+        newPhotos.push(dto);
+      }
+    }
+
+    return this.photosRepository.save(newPhotos);
+  }
+
   public async findAll(query: FindPhotoDto) {
     const findOptions = mapQueryToFindOptions(query);
 
