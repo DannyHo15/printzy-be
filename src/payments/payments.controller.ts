@@ -91,7 +91,6 @@ export class PaymentsController {
     return this.paymentsService.update(+id, {
       ...updatePaymentDto,
       clientId: user.client?.id,
-      tokenId: payment.tokenId,
       sum: payment.sum,
     });
   }

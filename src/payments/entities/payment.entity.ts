@@ -3,12 +3,19 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { Client } from '@clients/entities/client.entity';
 import { Order } from '@orders/entities/order.entity';
+
+export enum PaymentMethod {
+  MOMO = 'momo',
+  VNPAY = 'vnpay',
+  BANK_TRANSFER = 'bank_transfer',
+}
 
 @Entity({ name: 'payments' })
 export class Payment {
@@ -27,17 +34,21 @@ export class Payment {
   @Column()
   clientId: number;
 
-  @ManyToOne(() => Order, (order) => order.payments, {
+  @OneToOne(() => Order, (order) => order.payment, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   order: Order;
 
+  @Column({
+    type: 'enum',
+    enum: PaymentMethod,
+    default: PaymentMethod.BANK_TRANSFER,
+  })
+  paymentMethod: PaymentMethod;
+
   @Column()
   orderId: number;
-
-  @Column({ nullable: true })
-  tokenId: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -27,6 +27,7 @@ import { ProductOption } from '@app/products/entities/product-option.entity';
 import { ProductOptionValue } from '@app/products/entities/product-option-value.entity';
 import { UserReview } from '@app/reviews/entities/review.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
+import { CategoryProduct } from '@app/products/entities/category-product.entity';
 
 @Module({
   providers: [AddressSeedService],
@@ -56,6 +57,7 @@ import { CustomizeUpload } from '@app/customize-uploads/entities/customize-uploa
       Option,
       ProductOption,
       ProductOptionValue,
+      CategoryProduct,
       UserReview,
       CustomizeUpload,
     ]),

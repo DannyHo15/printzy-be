@@ -14,9 +14,6 @@ export class CreateAddressDto {
   phone: string;
 
   @ApiProperty()
-  postcode: string;
-
-  @ApiProperty()
   @IsNotEmpty()
   fullName: string;
 
