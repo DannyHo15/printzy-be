@@ -23,12 +23,14 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { FindPaymentDto } from './dto/find-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { VnpayService } from './vnpay.service';
 
 @Controller('payments')
 export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
     // @InjectStripe() private readonly stripeClient: Stripe,
+    private readonly vnpayService: VnpayService,
   ) {}
 
   @UseGuards(JWTGuard, RolesGuard)
@@ -38,20 +40,15 @@ export class PaymentsController {
     @Body() createPaymentDto: CreatePaymentDto,
     @Req() { user },
   ) {
-    // try {
-    //   await this.stripeClient.charges.create({
-    //     source: createPaymentDto.tokenId,
-    //     amount: createPaymentDto.sum * KOPECKS_IN_RUBLE,
-    //     currency: 'RUB',
-    //   });
-    // } catch (error) {
-    //   throw new BadRequestException('Something wrong with your payment.');
-    // }
-
-    return this.paymentsService.create({
+    const payment = await this.paymentsService.create({
       ...createPaymentDto,
       clientId: user.client?.id,
     });
+
+    if (createPaymentDto.paymentMethod === 'vnpay') {
+      return { paymentUrl: payment.paymentUrl };
+    }
+    return null;
   }
 
   @UseGuards(JWTGuard)

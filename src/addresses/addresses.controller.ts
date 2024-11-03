@@ -63,6 +63,18 @@ export class AddressesController {
     return address;
   }
 
+  @UseGuards(JWTGuard)
+  @Get('client:id')
+  public async findByClientId(@Param('id') id: string, @Req() { user }) {
+    const addresses = await this.addressesService.findByClientId(+id);
+
+    if (user.client?.id !== addresses?.[0]?.clientId) {
+      throw new ForbiddenException();
+    }
+
+    return addresses;
+  }
+
   @UseGuards(JWTGuard, RolesGuard)
   @Roles('client')
   @Patch(':id')

@@ -7,15 +7,25 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { FindPaymentDto } from './dto/find-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { Payment } from './entities/payment.entity';
+import { VnpayService } from './vnpay.service';
 
 @Injectable()
 export class PaymentsService {
   constructor(
     @InjectRepository(Payment) private paymentsRepository: Repository<Payment>,
+    private readonly vnpayService: VnpayService,
   ) {}
 
   public async create(createPaymentDto: CreatePaymentDto) {
-    return this.paymentsRepository.save(createPaymentDto);
+    this.paymentsRepository.save(createPaymentDto);
+    if (createPaymentDto.paymentMethod === 'vnpay') {
+      const vnpUrl = this.vnpayService.createPaymentUrl(
+        createPaymentDto.orderId.toString(),
+        createPaymentDto.sum,
+        `Payment for order #${createPaymentDto.orderId}`,
+      );
+      return { paymentUrl: vnpUrl };
+    }
   }
 
   public async findAll(query: FindPaymentDto) {

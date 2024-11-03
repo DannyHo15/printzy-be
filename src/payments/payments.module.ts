@@ -5,16 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaymentsService } from './payments.service';
 import { PaymentsController } from './payments.controller';
 import { Payment } from './entities/payment.entity';
+import { VnpayService } from './vnpay.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Payment]),
-    // StripeModule.forRoot({
-    //   apiKey: process.env.STRIPE_SECRET_KEY,
-    //   apiVersion: '2020-08-27',
-    // }),
-  ],
+  imports: [TypeOrmModule.forFeature([Payment])],
   controllers: [PaymentsController],
-  providers: [PaymentsService],
+  providers: [PaymentsService, VnpayService],
 })
 export class PaymentsModule {}

@@ -8,10 +8,6 @@ export class CreateOptionDto {
   name: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  productId: string;
-
-  @ApiProperty()
   @IsNotEmpty({ each: true })
   values: string[];
 }
