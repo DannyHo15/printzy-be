@@ -32,13 +32,6 @@ export class CustomizeUpload {
   @Column()
   size: string;
 
-  @OneToMany(() => Product, (product) => product.upload, {
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE',
-    nullable: true,
-  })
-  products: Product[];
-
   @CreateDateColumn()
   createdAt: Date;
 

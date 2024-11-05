@@ -25,8 +25,8 @@ export class UploadsController {
     private readonly firebaseStorageService: FirebaseStorageService,
   ) {}
 
-  // @UseGuards(JWTGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @UseInterceptors(FileInterceptor('file'))
   @Post()
   public async create(@UploadedFile('file') file) {

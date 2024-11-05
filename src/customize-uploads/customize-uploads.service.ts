@@ -12,12 +12,8 @@ export class CustomizeUploadsService {
     private customizeUploadsRepository: Repository<CustomizeUpload>,
   ) {}
 
-  public async create(
-    createCustomizeUploadDto: CreateCustomizeUploadDto,
-    productId: number,
-  ) {
+  public async create(createCustomizeUploadDto: CreateCustomizeUploadDto) {
     return this.customizeUploadsRepository.save({
-      productId,
       ...createCustomizeUploadDto,
     });
   }
