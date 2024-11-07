@@ -73,6 +73,18 @@ export class AddressesService {
     return address;
   }
 
+  public async findByClientId(id: number) {
+    const addresses = await this.addressesRepository.find({
+      where: { clientId: id },
+    });
+
+    if (!addresses) {
+      throw new UnprocessableEntityException('Address is not found');
+    }
+
+    return addresses;
+  }
+
   public async update(id: number, updateAddressDto: UpdateAddressDto) {
     const address = await this.addressesRepository.findOne({
       where: { id },

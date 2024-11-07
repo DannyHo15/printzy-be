@@ -13,7 +13,11 @@ import { MIN_PASSWORD_LENGTH } from '@utils/variables';
 export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
-  name: string;
+  firstName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  lastName: string;
 
   @ApiProperty()
   @IsEmail()

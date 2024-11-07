@@ -7,16 +7,79 @@ import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { FindPurchaseDto } from './dto/find-purchase.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { Purchase } from './entities/purchase.entity';
+import { Product } from '@products/entities/product.entity';
+import { Variant } from '@app/variants/entities/variant.entity';
+import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 
 @Injectable()
 export class PurchasesService {
   constructor(
     @InjectRepository(Purchase)
     private purchasesRepository: Repository<Purchase>,
+
+    @InjectRepository(Product)
+    private productsRepository: Repository<Product>,
+
+    @InjectRepository(Variant)
+    private variantsRepository: Repository<Variant>,
+
+    @InjectRepository(CustomizeUpload)
+    private customizeUploadsRepository: Repository<CustomizeUpload>,
   ) {}
 
   public async create(createPurchaseDto: CreatePurchaseDto) {
-    return this.purchasesRepository.save(createPurchaseDto);
+    const {
+      productId,
+      variantId,
+      customizeUploadId,
+      quantity,
+      orderId,
+      clientId,
+    } = createPurchaseDto;
+
+    // Fetch the Product entity
+    const product = await this.productsRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) {
+      throw new UnprocessableEntityException('Product not found');
+    }
+
+    // Optionally fetch the Variant entity if provided
+    let variant: Variant | null = null;
+    if (variantId) {
+      variant = await this.variantsRepository.findOne({
+        where: { id: variantId },
+      });
+      if (!variant) {
+        throw new UnprocessableEntityException('Variant not found');
+      }
+    }
+
+    // Optionally fetch the CustomizeUpload entity if provided
+    let customizeUpload: CustomizeUpload | null = null;
+    if (customizeUploadId) {
+      customizeUpload = await this.customizeUploadsRepository.findOne({
+        where: { id: customizeUploadId },
+      });
+      if (!customizeUpload) {
+        throw new UnprocessableEntityException('Customize Upload not found');
+      }
+    }
+
+    // Create the purchase entity
+    const purchase = this.purchasesRepository.create({
+      product,
+      productId,
+      variant,
+      customizeUpload,
+      quantity,
+      orderId,
+      clientId,
+    });
+
+    // Save the purchase to the database
+    return this.purchasesRepository.save(purchase);
   }
 
   public async findAll(query: FindPurchaseDto) {
@@ -39,7 +102,7 @@ export class PurchasesService {
     });
 
     if (!purchase) {
-      throw new UnprocessableEntityException('Purchase is not found');
+      throw new UnprocessableEntityException('Purchase not found');
     }
 
     return purchase;
@@ -51,7 +114,7 @@ export class PurchasesService {
     });
 
     if (!purchase) {
-      throw new UnprocessableEntityException('Purchase is not found');
+      throw new UnprocessableEntityException('Purchase not found');
     }
 
     const updatedPurchase = await this.purchasesRepository.save({

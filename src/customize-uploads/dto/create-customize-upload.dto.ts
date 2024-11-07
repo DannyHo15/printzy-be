@@ -31,9 +31,4 @@ export class CreateCustomizeUploadDto {
   @IsNotEmpty()
   @IsOptional()
   size: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  productId: number;
 }

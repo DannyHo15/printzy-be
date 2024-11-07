@@ -10,5 +10,6 @@ import { FirebaseStorageService } from './firebase-storage.service';
   imports: [TypeOrmModule.forFeature([Upload])],
   controllers: [UploadsController],
   providers: [UploadsService, FirebaseStorageService],
+  exports: [FirebaseStorageService],
 })
 export class UploadsModule {}

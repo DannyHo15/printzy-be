@@ -1,12 +1,68 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+  IsInt,
+  Min,
+  IsString,
+  IsEmail,
+  IsEnum,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
-import { OrderStatus } from '@app/declarations';
+export enum OrderStatus {
+  Processing = 'processing',
+  Delivery = 'delivery',
+  Completed = 'completed',
+  Cancelled = 'cancelled',
+}
+
+class PurchaseItemDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  productId: number;
+
+  @ApiProperty({ description: 'Quantity of the product', example: 1 })
+  @IsInt()
+  @Min(1)
+  quantity: number;
+
+  @ApiProperty({
+    description: 'ID of the product variant, if applicable',
+    required: false,
+  })
+  @IsOptional()
+  variantId?: number;
+
+  @ApiProperty({
+    description: 'ID of the customization upload, if applicable',
+    required: false,
+  })
+  @IsOptional()
+  customizeUploadId?: number;
+}
 
 export class CreateOrderDto {
   @ApiProperty()
   @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   phone: string;
+
+  @ApiProperty()
+  @IsEmail()
+  @IsOptional()
+  email?: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -16,13 +72,17 @@ export class CreateOrderDto {
   @IsOptional()
   clientId?: number;
 
-  @ApiProperty()
-  @IsOptional()
-  purchases: {
-    productId: number;
-  }[];
+  @ApiProperty({
+    type: [PurchaseItemDto],
+    description: 'List of purchases in the order',
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PurchaseItemDto)
+  purchases: PurchaseItemDto[];
 
-  @ApiProperty()
+  @ApiProperty({ enum: OrderStatus, default: OrderStatus.Processing })
+  @IsEnum(OrderStatus)
   @IsOptional()
-  status: OrderStatus;
+  status?: OrderStatus;
 }

@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,19 +24,22 @@ export class Order {
 
   @Column({
     type: 'enum',
-    enum: ['processing', 'delivery', 'completed', 'cancelled'],
+    enum: ['processing', 'delivery', 'completed', 'cancelled', 'refunded'],
     default: 'processing',
   })
   status: OrderStatus;
 
   @Column()
-  firstname: string;
+  firstName: string;
 
   @Column()
-  lastname: string;
+  lastName: string;
 
   @Column()
   phone: string;
+
+  @Column()
+  email: string;
 
   @ManyToOne(() => Address, (address) => address.orders, {
     onDelete: 'SET NULL',
@@ -55,11 +60,12 @@ export class Order {
   @Column()
   clientId: number;
 
-  @OneToMany(() => Payment, (payment) => payment.order, {
+  @OneToOne(() => Payment, (payment) => payment.order, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  payments: Payment[];
+  @JoinColumn()
+  payment: Payment;
 
   @OneToMany(() => Purchase, (purchase) => purchase.order, {
     onDelete: 'CASCADE',
