@@ -13,6 +13,13 @@ export class CreateClientDto {
   lastName: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  firstName: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty()
   @IsEmail()
   email: string;
 

@@ -8,6 +8,7 @@ export const ormConfig: TypeOrmModuleOptions = {
   password: process.env.POSTGRES_PASSWORD,
   database: 'printzy_db',
   synchronize: true, //dont use in production
+  ssl: { rejectUnauthorized: false },
   autoLoadEntities: true,
   ssl: {
     rejectUnauthorized: false,

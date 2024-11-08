@@ -6,9 +6,13 @@ import { Address } from './entities/address.entity';
 import { Province } from '@app/province/entities/province.entity';
 import { District } from '@app/district/entities/district.entity';
 import { Ward } from '@app/ward/entities/ward.entity';
+import { User } from '@app/users/entities/user.entity';
+import { Client } from '@app/clients/entities/client.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Address, Province, District, Ward])],
+  imports: [
+    TypeOrmModule.forFeature([Address, Province, District, Ward, User, Client]),
+  ],
   controllers: [AddressesController],
   providers: [AddressesService],
 })

@@ -25,8 +25,11 @@ import { FindPaymentDto } from './dto/find-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { VnpayService } from './vnpay.service';
 import { User } from '@app/users/entities/user.entity';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('payments')
+@ApiTags('Payments')
+@ApiBearerAuth()
 export class PaymentsController {
   constructor(
     private readonly paymentsService: PaymentsService,
@@ -118,5 +121,21 @@ export class PaymentsController {
     }
 
     return this.paymentsService.remove(+id);
+  }
+
+  @UseGuards(JWTGuard)
+  @Post('vnpay/create_payment_url')
+  public async createPaymentUrl(
+    @Body() createPaymentDto: CreatePaymentDto,
+    @Req() { user, headers, connection, socket },
+  ) {
+    return this.paymentsService.createVnpayPaymentUrl(
+      {
+        ...createPaymentDto,
+      },
+      headers,
+      connection,
+      socket,
+    );
   }
 }

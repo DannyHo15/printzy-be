@@ -25,6 +25,7 @@ async function bootstrap() {
   const documentConfig = new DocumentBuilder()
     .setTitle('Printzy')
     .setDescription('Printzy API description.')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, documentConfig);

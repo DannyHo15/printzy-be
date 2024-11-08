@@ -60,6 +60,7 @@ import { CategoryProduct } from '@app/products/entities/category-product.entity'
       CategoryProduct,
       UserReview,
       CustomizeUpload,
+      CategoryProduct,
     ]),
   ],
   exports: [AddressSeedService],

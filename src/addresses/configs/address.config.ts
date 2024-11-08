@@ -95,7 +95,7 @@ export const AddressPaginateConfig: PaginateConfig<Address> = {
    * Type: RelationColumn<CatEntity>
    * Description: Indicates what relations of entity should be loaded.
    */
-  relations: ['ward', 'province', 'district'],
+  relations: ['ward', 'province', 'district', 'user'],
 
   /**
    * Required: false

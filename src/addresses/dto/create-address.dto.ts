@@ -29,5 +29,5 @@ export class CreateAddressDto {
   wardId: number;
 
   @ApiProperty()
-  clientId: number;
+  userId: number;
 }

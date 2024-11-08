@@ -18,6 +18,7 @@ import { UserReview } from '@app/reviews/entities/review.entity';
 import { EGender, ERole } from '@app/utils/variables';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { Address } from '@app/addresses/entities/address.entity';
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()

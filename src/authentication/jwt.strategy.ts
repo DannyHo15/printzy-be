@@ -39,7 +39,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (user.role === 'client') {
       const clients = await this.clients.findAll({ userId: user.id });
 
-      user.client = clients.data[0];
+      user.clients = clients.data;
     }
 
     return user;

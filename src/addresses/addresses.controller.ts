@@ -37,7 +37,7 @@ export class AddressesController {
   ) {
     return this.addressesService.create({
       ...createAddressDto,
-      clientId: user.client?.id,
+      userId: user.id,
     });
   }
 
@@ -48,7 +48,8 @@ export class AddressesController {
     @Query() query: PaginateQuery,
     @Req() { user },
   ): Promise<Paginated<Address>> {
-    return this.addressesService.findAll(query, user.client?.id);
+    const userId = user.id;
+    return this.addressesService.findAll(query, userId);
   }
 
   @UseGuards(JWTGuard)
@@ -56,7 +57,7 @@ export class AddressesController {
   public async findOne(@Param('id') id: string, @Req() { user }) {
     const address = await this.addressesService.findOne(+id);
 
-    if (user.client?.id !== address.clientId && user.role !== 'admin') {
+    if (user.id !== address.user.id && user.role !== 'admin') {
       throw new ForbiddenException();
     }
 
@@ -85,22 +86,24 @@ export class AddressesController {
   ) {
     const address = await this.addressesService.findOne(+id);
 
-    if (user.client?.id !== address.clientId && user.role !== 'admin') {
+    if (user.id !== address.user.id && user.role !== 'admin') {
       throw new ForbiddenException();
     }
 
     return this.addressesService.update(+id, {
       ...updateAddressDto,
-      clientId: user.client?.id,
+      userId: user.id,
     });
   }
 
   @UseGuards(JWTGuard)
+  @Roles('client')
   @Delete(':id')
   public async remove(@Param('id') id: string, @Req() { user }) {
     const address = await this.addressesService.findOne(+id);
-
-    if (user.client?.id !== address.clientId && user.role !== 'admin') {
+    console.log(address);
+    console.log(user);
+    if (user.id !== address.user.id) {
       throw new ForbiddenException();
     }
 
