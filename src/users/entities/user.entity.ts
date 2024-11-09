@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import { RefreshToken } from '@authentication/entities/refresh-token.entity';
@@ -70,13 +72,12 @@ export class User {
   })
   gender: Gender;
 
-  @OneToMany(() => Client, (client) => client.user, {
+  @OneToOne(() => Client, (client) => client.user, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  clients: Client[];
-
-  client?: Client;
+  @JoinColumn()
+  client: Client;
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
     onUpdate: 'CASCADE',
