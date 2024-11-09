@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
+import { format } from 'date-fns';
 
 @Injectable()
 export class VnpayService {
@@ -9,15 +10,22 @@ export class VnpayService {
   private readonly vnp_ReturnUrl = process.env.VNP_RETURNURL;
 
   // Method to create VNPay payment URL
-  createPaymentUrl(orderId: string, amount: number, orderInfo: string) {
+  createPaymentUrl(
+    orderId: string,
+    amount: number,
+    orderInfo: string,
+    vnp_IpAddr: string = '127.0.0.1',
+  ): string {
+    let createDate = format(new Date(), 'yyyyMMddHHmmss');
+
     const params: any = {
       vnp_Version: '2.1.0',
       vnp_Command: 'pay',
       vnp_TmnCode: this.vnp_TmnCode,
       vnp_Amount: amount * 100,
-      vnp_CreateDate: new Date().toISOString().slice(0, 19).replace(/-|:/g, ''),
+      vnp_CreateDate: createDate,
       vnp_CurrCode: 'VND',
-      vnp_IpAddr: '127.0.0.1',
+      vnp_IpAddr,
       vnp_Locale: 'vn',
       vnp_OrderInfo: orderInfo,
       vnp_OrderType: 'billpayment',
