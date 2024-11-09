@@ -103,7 +103,11 @@ export const mapQueryToFindOptions = <T>(query: IQuery): FindManyOptions<T> => {
   return {
     take: +$limit || DEFAULT_PAGINATION_LIMIT,
     skip: +$skip || DEFAULT_PAGINATION_SKIP,
-    order: typeof $order === 'string' ? JSON.parse($order) : $order,
+    order: $order
+      ? typeof $order === 'string'
+        ? JSON.parse($order)
+        : $order
+      : { createdAt: 'DESC' },
     where: whereEntries.length === 0 ? undefined : mappedWhere,
   };
 };
