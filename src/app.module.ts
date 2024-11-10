@@ -28,6 +28,7 @@ import { ProvinceModule } from './province/province.module';
 import { DistrictModule } from './district/district.module';
 import { WardModule } from './ward/ward.module';
 import { SeedModule } from './database/relational/seed.module';
+import { ShipModule } from './ship/ship.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { SeedModule } from './database/relational/seed.module';
     DistrictModule,
     WardModule,
     SeedModule,
+    ShipModule,
   ],
   controllers: [],
   providers: [],

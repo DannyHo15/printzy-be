@@ -98,7 +98,7 @@ export const mapQueryToFindOptions = <T>(query: IQuery): FindManyOptions<T> => {
 
         return [key, parsedValue];
       }),
-  ) as FindOptionsWhere<T>; // Assert mappedWhere to FindOptionsWhere<T>
+  ) as FindOptionsWhere<T>;
 
   return {
     take: +$limit || DEFAULT_PAGINATION_LIMIT,
