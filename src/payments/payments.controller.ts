@@ -24,6 +24,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { FindPaymentDto } from './dto/find-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { VnpayService } from './vnpay.service';
+import { User } from '@app/users/entities/user.entity';
 
 @Controller('payments')
 export class PaymentsController {
@@ -49,6 +50,21 @@ export class PaymentsController {
       return { paymentUrl: payment.paymentUrl };
     }
     return null;
+  }
+
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @Post('vnpay/create_payment_url')
+  async createVnpayPayment(
+    @Body() createPaymentDto: CreatePaymentDto,
+    @Req() user,
+  ) {
+    console.log('createPaymentDto', createPaymentDto);
+    const payment = await this.paymentsService.create({
+      ...createPaymentDto,
+    });
+
+    return { data: payment };
   }
 
   @UseGuards(JWTGuard)

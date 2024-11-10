@@ -28,6 +28,6 @@ export class CreatePaymentDto {
     example: PaymentMethod.MOMO,
   })
   @IsEnum(PaymentMethod)
-  @IsNotEmpty()
+  @IsOptional()
   paymentMethod: PaymentMethod;
 }

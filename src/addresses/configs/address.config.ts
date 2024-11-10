@@ -53,6 +53,7 @@ export const AddressPaginateConfig: PaginateConfig<Address> = {
     'phone',
     'addressDetail',
     'fullName',
+    'isDefault',
   ],
 
   /**
