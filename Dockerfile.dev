@@ -12,7 +12,7 @@ COPY package.json package-lock.json yarn.lock ./
 COPY  poised-shift-422808-d9-firebase-adminsdk-7mpf9-965a8b765c.json ./
 
 # Install dependencies using npm
-RUN npm ci
+RUN yarn
 
 
 # Copy the remaining application files

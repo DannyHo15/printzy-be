@@ -11,6 +11,7 @@ import { Province } from '@app/province/entities/province.entity';
 import { District } from '@app/district/entities/district.entity';
 import { Ward } from '@app/ward/entities/ward.entity';
 import { User } from '@app/users/entities/user.entity';
+import { Client } from '@app/clients/entities/client.entity';
 
 @Injectable()
 export class AddressesService {
@@ -22,17 +23,18 @@ export class AddressesService {
     private districtsRepository: Repository<District>,
     @InjectRepository(Ward) private wardsRepository: Repository<Ward>,
     @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(Client) private clientRespository: Repository<Client>,
   ) {}
 
   public async create(createAddressDto: CreateAddressDto) {
     const [_, count] = await this.addressesRepository.findAndCount();
-    const user = await this.usersRepository.findOne({
-      where: { id: createAddressDto.userId },
+    const client = await this.clientRespository.findOne({
+      where: { id: createAddressDto.clientId },
     });
 
     const isFirstAddress = count === 0;
 
-    if (!user) {
+    if (!client) {
       throw new UnprocessableEntityException('User not found');
     }
     if (count >= 3) {
@@ -63,8 +65,8 @@ export class AddressesService {
       ...createAddressDto,
       province,
       district,
+      client,
       ward,
-      user,
       isDefault: isFirstAddress,
     });
     return this.addressesRepository.save(address);
@@ -72,11 +74,11 @@ export class AddressesService {
 
   public async findAll(
     query: PaginateQuery,
-    userId: number,
+    clientId: number,
   ): Promise<Paginated<Address>> {
     return paginate(query, this.addressesRepository, {
       ...AddressPaginateConfig,
-      where: { user: { id: userId } },
+      where: { client: { id: clientId } },
     });
   }
 
@@ -87,7 +89,7 @@ export class AddressesService {
         province: true,
         district: true,
         ward: true,
-        user: true,
+        client: true,
       },
     });
 
@@ -100,7 +102,7 @@ export class AddressesService {
 
   public async findByClientId(id: number) {
     const addresses = await this.addressesRepository.find({
-      where: { clientId: id },
+      where: { client: { id } },
     });
 
     if (!addresses) {
@@ -114,7 +116,7 @@ export class AddressesService {
     const address = await this.addressesRepository.findOne({
       where: { id },
       relations: {
-        user: true,
+        client: true,
       },
     });
 
@@ -124,7 +126,7 @@ export class AddressesService {
     if (updateAddressDto.isDefault) {
       // Set all other addresses' default property to false
       await this.addressesRepository.update(
-        { user: { id: address.user.id }, id: Not(id) },
+        { client: { id: address.client.id }, id: Not(id) },
         { isDefault: false },
       );
     }

@@ -31,8 +31,11 @@ export class Client {
   @Column()
   userId: number;
 
-  @OneToOne(() => Address)
-  address: Address;
+  @OneToMany(() => Address, (address) => address.client, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  addresses: Address[];
 
   @OneToMany(() => Order, (order) => order.client, {
     onDelete: 'CASCADE',

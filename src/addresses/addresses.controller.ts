@@ -37,7 +37,7 @@ export class AddressesController {
   ) {
     return this.addressesService.create({
       ...createAddressDto,
-      userId: user.id,
+      clientId: user.client.id,
     });
   }
 
@@ -48,16 +48,19 @@ export class AddressesController {
     @Query() query: PaginateQuery,
     @Req() { user },
   ): Promise<Paginated<Address>> {
-    const userId = user.id;
-    return this.addressesService.findAll(query, userId);
+    console.log(user);
+    const clientId = user.client.id;
+    console.log(clientId);
+    return this.addressesService.findAll(query, clientId);
   }
 
   @UseGuards(JWTGuard)
   @Get(':id')
   public async findOne(@Param('id') id: string, @Req() { user }) {
     const address = await this.addressesService.findOne(+id);
+    console.log(address.client.id, user.client.id);
 
-    if (user.id !== address.user.id && user.role !== 'admin') {
+    if (user.client.id !== address.client.id && user.role !== 'admin') {
       throw new ForbiddenException();
     }
 
@@ -65,11 +68,11 @@ export class AddressesController {
   }
 
   @UseGuards(JWTGuard)
-  @Get('client:id')
+  @Get('user:id')
   public async findByClientId(@Param('id') id: string, @Req() { user }) {
     const addresses = await this.addressesService.findByClientId(+id);
 
-    if (user.client?.id !== addresses?.[0]?.clientId) {
+    if (user.client?.id !== addresses?.[0].client.id) {
       throw new ForbiddenException();
     }
 
@@ -86,13 +89,13 @@ export class AddressesController {
   ) {
     const address = await this.addressesService.findOne(+id);
 
-    if (user.id !== address.user.id && user.role !== 'admin') {
+    if (user.client.id !== address.client.id && user.role !== 'admin') {
       throw new ForbiddenException();
     }
 
     return this.addressesService.update(+id, {
       ...updateAddressDto,
-      userId: user.id,
+      clientId: user.id,
     });
   }
 
@@ -103,7 +106,7 @@ export class AddressesController {
     const address = await this.addressesService.findOne(+id);
     console.log(address);
     console.log(user);
-    if (user.id !== address.user.id) {
+    if (user?.client.id !== address.client.id) {
       throw new ForbiddenException();
     }
 

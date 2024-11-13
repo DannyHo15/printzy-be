@@ -54,9 +54,39 @@ export class AddressSeedService {
 
         if (existingEntity) {
           // Update existing entity
-          await repository.update(existingEntity['code'], {
-            ...entity,
-          } as any);
+          if (fileName.includes('districts')) {
+            const district = entity as District;
+            const province = await this.provinceRepository.findOne({
+              where: { code: district.province_code },
+            });
+            if (province) {
+              district.province = province;
+              await repository.update(existingEntity['code'], {
+                ...entity,
+                province,
+              } as any);
+            } else {
+              await this.districtRepository.update(existingEntity['code'], {
+                ...entity,
+              } as any);
+            }
+          } else if (fileName.includes('wards')) {
+            const ward = entity as Ward;
+            const district = await this.districtRepository.findOne({
+              where: { code: ward.district_code },
+            });
+            if (district) {
+              ward.district = district;
+              await repository.update(existingEntity['code'], {
+                ...entity,
+                district,
+              } as any);
+            } else {
+              await repository.update(existingEntity['code'], {
+                ...entity,
+              } as any);
+            }
+          }
 
           console.log(
             `Updated entity with ${uniqueField.toString()}: ${entity[uniqueField]}`,
@@ -105,6 +135,10 @@ export class AddressSeedService {
         if (district) {
           ward.district = district;
           await this.wardRepository.save(ward);
+        } else {
+          console.log(
+            `District not found for ward code: ${ward.district_code} with ${ward.name}`,
+          );
         }
       }
     }
