@@ -1,8 +1,8 @@
 // src/ship/ship.module.ts
 import { Module } from '@nestjs/common';
-import { ShipController } from './ship.controller';
 import { HttpModule } from '@nestjs/axios';
 import { ShipService } from './ship.service';
+import { ShipController } from './ship.controller';
 
 @Module({
   imports: [HttpModule],

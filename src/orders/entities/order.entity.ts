@@ -1,7 +1,10 @@
 import {
+  AfterInsert,
+  AfterUpdate,
   Column,
   CreateDateColumn,
   Entity,
+  getRepository,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -78,4 +81,13 @@ export class Order {
 
   @UpdateDateColumn()
   updatedAt: Date;
+  @Column({ unique: true })
+  orderNumber: string;
+
+  @AfterInsert()
+  @AfterUpdate()
+  async setFormattedId() {
+    this.orderNumber = `#ORDER-${this.id.toString().padStart(9, '0')}`;
+    await getRepository(Order).save(this);
+  }
 }

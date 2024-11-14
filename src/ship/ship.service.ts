@@ -4,6 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { map, catchError } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
+import { ShipDto } from './dto/shipping-fee.dto';
 
 @Injectable()
 export class ShipService {
@@ -20,10 +21,10 @@ export class ShipService {
     district: string;
     weight: number;
     value: number;
-  }): Observable<AxiosResponse<any>> {
+  }): Observable<AxiosResponse<ShipDto>> {
     const headers = {
-      Token: '4AwTGONpejOFkXgk6cgKiUwvLYN6SkeUZIgJOF',
-      'X-Client-Source': 'S22769459',
+      Token: process.env.GHTK_API_TOKEN,
+      'X-Client-Source': process.env.GHTK_USER_CODE,
     };
 
     return this.httpService.get(this.GHTK_API_URL, { headers, params }).pipe(
