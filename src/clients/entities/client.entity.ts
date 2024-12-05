@@ -15,20 +15,18 @@ import { Address } from '@addresses/entities/address.entity';
 import { Order } from '@orders/entities/order.entity';
 import { Payment } from '@payments/entities/payment.entity';
 import { Purchase } from '@purchases/entities/purchase.entity';
+import { IsOptional } from 'class-validator';
 
 @Entity({ name: 'clients' })
 export class Client {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, (user) => user.client, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn()
-  user: User;
+  // @OneToOne(() => User)
+  // user: User;
 
-  @Column()
+  @Column({ nullable: true })
+  @IsOptional()
   userId: number;
 
   @OneToMany(() => Address, (address) => address.client, {

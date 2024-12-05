@@ -33,5 +33,3 @@ export type Gender = 'male' | 'female' | 'other';
 export type Owner = 'user' | 'client';
 
 export type Status = 'wait' | 'success' | 'fail';
-
-export type OrderStatus = 'processing' | 'delivery' | 'completed' | 'cancelled';

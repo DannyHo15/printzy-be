@@ -2,13 +2,16 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export const ormConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: '128.199.168.37',
-  port: 5432,
-  username: 'postgres',
+  host: process.env.POSTGRES_HOST,
+  port: +process.env.POSTGRES_PORT,
+  username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
-  database: 'bonsay',
+  database: process.env.POSTGRES_DB,
   synchronize: true, //dont use in production
   autoLoadEntities: true,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
 // export const ormConfig: TypeOrmModuleOptions = {
 //   type: 'postgres',

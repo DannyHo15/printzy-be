@@ -8,6 +8,10 @@ export class CreatePurchaseDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  transactionId: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   orderId: number;
 
   @ApiProperty()
@@ -22,18 +26,4 @@ export class CreatePurchaseDto {
   @Min(1)
   @IsNotEmpty()
   quantity: number;
-
-  @ApiProperty({
-    description: 'ID of the product variant, if applicable',
-    required: false,
-  })
-  @IsOptional()
-  variantId?: number;
-
-  @ApiProperty({
-    description: 'ID of the customization upload, if applicable',
-    required: false,
-  })
-  @IsOptional()
-  customizeUploadId?: number;
 }

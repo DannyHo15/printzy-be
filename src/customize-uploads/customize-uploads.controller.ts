@@ -17,8 +17,10 @@ import { Roles } from '@utils/decorators/role.decorator';
 import { RolesGuard } from '@utils/guards/roles.guard';
 import { CustomizeUploadsService } from './customize-uploads.service';
 import { FirebaseStorageService } from '@app/uploads/firebase-storage.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('customize-uploads')
+@ApiTags('customize-uploads')
 export class CustomizeUploadsController {
   constructor(
     private readonly customizeUploadsService: CustomizeUploadsService,

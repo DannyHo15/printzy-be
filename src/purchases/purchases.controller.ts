@@ -21,8 +21,10 @@ import { PurchasesService } from './purchases.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { FindPurchaseDto } from './dto/find-purchase.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('purchases')
+@ApiTags('purchases')
 export class PurchasesController {
   constructor(
     private readonly purchasesService: PurchasesService,
@@ -38,7 +40,7 @@ export class PurchasesController {
   ) {
     const order = await this.ordersService.findOne(createPurchaseDto.orderId);
 
-    if (order.clientId !== user.client?.id) {
+    if (order.client.id !== user.client?.id) {
       throw new BadRequestException('Unknown order');
     }
 
@@ -84,7 +86,7 @@ export class PurchasesController {
 
     const order = await this.ordersService.findOne(updatePurchaseDto.orderId);
 
-    if (order.clientId !== user.client?.id) {
+    if (order.client.id !== user.client?.id) {
       throw new BadRequestException('Unknown order');
     }
 

@@ -10,11 +10,10 @@ import {
   UseGuards,
   Req,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 
-import { Roles } from '@utils/decorators/role.decorator';
 import { JWTGuard } from '@authentication/jwt.guard';
-import { RolesGuard } from '@utils/guards/roles.guard';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -62,8 +61,9 @@ export class UsersController {
     type: User,
   })
   public async findOne(@Param('id') id: string, @Req() { user }) {
-    if (String(user.id) !== id && user.role !== 'admin') {
-      throw new ForbiddenException();
+    console.log(user.id, id);
+    if (user.id !== +id && user.role !== 'admin') {
+      throw new BadRequestException("You can't access this user");
     }
 
     return this.usersService.findOne(+id);

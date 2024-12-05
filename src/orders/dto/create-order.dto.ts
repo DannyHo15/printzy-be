@@ -1,33 +1,26 @@
+import { OrderStatus } from '@app/utils/types/order';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsArray,
-  ValidateNested,
-  IsInt,
-  Min,
-  IsString,
-  IsEmail,
-  IsEnum,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsNotEmpty, IsOptional, IsInt, Min, IsEnum } from 'class-validator';
 
-export enum OrderStatus {
-  Processing = 'processing',
-  Delivery = 'delivery',
-  Completed = 'completed',
-  Cancelled = 'cancelled',
-}
-
-class PurchaseItemDto {
-  @ApiProperty()
+export class CreateOrderDto {
+  @ApiProperty({
+    description: 'ID of the address',
+    example: 1,
+  })
   @IsNotEmpty()
-  productId: number;
+  addressId: number;
 
-  @ApiProperty({ description: 'Quantity of the product', example: 1 })
-  @IsInt()
-  @Min(1)
-  quantity: number;
+  @ApiProperty({
+    description: 'ID of the payment',
+    example: 1,
+  })
+  @IsNotEmpty()
+  paymentId: number;
+
+  @ApiProperty({ enum: OrderStatus, default: OrderStatus.PROCESSING })
+  @IsEnum(OrderStatus)
+  @IsOptional()
+  status?: OrderStatus;
 
   @ApiProperty({
     description: 'ID of the product variant, if applicable',
@@ -36,53 +29,22 @@ class PurchaseItemDto {
   @IsOptional()
   variantId?: number;
 
+  @IsOptional()
+  clientId: number;
+
+  @ApiProperty({ description: 'Quantity of the variant', example: 1 })
+  @IsInt()
+  @Min(1)
+  quantity: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  productId: number;
+
   @ApiProperty({
     description: 'ID of the customization upload, if applicable',
     required: false,
   })
   @IsOptional()
   customizeUploadId?: number;
-}
-
-export class CreateOrderDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  phone: string;
-
-  @ApiProperty()
-  @IsEmail()
-  @IsOptional()
-  email?: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  addressId: number;
-
-  @ApiProperty()
-  @IsOptional()
-  clientId?: number;
-
-  @ApiProperty({
-    type: [PurchaseItemDto],
-    description: 'List of purchases in the order',
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => PurchaseItemDto)
-  purchases: PurchaseItemDto[];
-
-  @ApiProperty({ enum: OrderStatus, default: OrderStatus.Processing })
-  @IsEnum(OrderStatus)
-  @IsOptional()
-  status?: OrderStatus;
 }

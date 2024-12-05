@@ -27,8 +27,8 @@ import { VnpayService } from './vnpay.service';
 import { User } from '@app/users/entities/user.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@Controller('payments')
-@ApiTags('Payments')
+@Controller('payment')
+@ApiTags('Payment')
 @ApiBearerAuth()
 export class PaymentsController {
   constructor(

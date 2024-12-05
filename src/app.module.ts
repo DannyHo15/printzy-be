@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 import { UsersModule } from '@users/users.module';
 import { AuthenticationModule } from '@authentication/authentication.module';
@@ -29,10 +30,17 @@ import { DistrictModule } from './district/district.module';
 import { WardModule } from './ward/ward.module';
 import { SeedModule } from './database/relational/seed.module';
 import { ShipModule } from './ship/ship.module';
+import { ShipmentModule } from './shipment/shipment.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(ormConfig),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      cache: true,
+      expandVariables: true,
+    }),
     UsersModule,
     AuthenticationModule,
     AddressesModule,
@@ -60,6 +68,7 @@ import { ShipModule } from './ship/ship.module';
     WardModule,
     SeedModule,
     ShipModule,
+    ShipmentModule,
   ],
   controllers: [],
   providers: [],

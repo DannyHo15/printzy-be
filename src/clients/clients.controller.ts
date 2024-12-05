@@ -20,8 +20,10 @@ import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { FindClientDto } from './dto/find-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('clients')
+@ApiTags('clients')
 export class ClientsController {
   constructor(
     private readonly clientsService: ClientsService,
@@ -30,12 +32,7 @@ export class ClientsController {
 
   @Post()
   public async create(@Body() createClientDto: CreateClientDto) {
-    const user = await this.usersService.create({
-      ...createClientDto,
-      role: 'client',
-    });
-
-    return this.clientsService.create({ ...createClientDto, userId: user.id });
+    return this.clientsService.create(createClientDto);
   }
 
   @UseGuards(JWTGuard)

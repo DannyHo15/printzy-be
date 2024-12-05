@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
@@ -15,6 +15,7 @@ import { ClientsModule } from 'src/clients/clients.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([RefreshToken]),
+    forwardRef(() => ClientsModule),
     PassportModule.register({}),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -23,7 +24,6 @@ import { ClientsModule } from 'src/clients/clients.module';
       },
     }),
     UsersModule,
-    ClientsModule,
   ],
   controllers: [AuthenticationController],
   providers: [RefreshTokensRepository, JwtStrategy, TokensService],

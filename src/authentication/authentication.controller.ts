@@ -7,7 +7,7 @@ import { AuthenticationDto } from './dto/authentication.dto';
 import { TokensService } from './tokens.service';
 import { ApiTags } from '@nestjs/swagger';
 
-interface RefreshRequest {
+interface ITokenRequest {
   refreshToken: string;
 }
 
@@ -17,44 +17,38 @@ interface RevokeRequest {
 @ApiTags('authentication')
 @Controller('authentication')
 export class AuthenticationController {
-  private readonly usersService: UsersService;
-  private readonly tokensService: TokensService;
-
-  public constructor(tokensService: TokensService, usersService: UsersService) {
-    this.tokensService = tokensService;
-    this.usersService = usersService;
-  }
-
+  constructor(
+    private readonly tokensService: TokensService,
+    private readonly usersService: UsersService,
+  ) {}
   @Post()
   public async create(@Body() { email, password }: AuthenticationDto) {
-    const user = (
+    const [user] = (
       await this.usersService.findAll({
         $limit: 1,
         email: {
           $eq: email,
         },
       })
-    ).data[0];
+    ).data;
 
-    const valid = user
-      ? await this.usersService.validateCredentials(user.id, password)
-      : false;
-
-    if (!valid) {
+    if (
+      !user ||
+      !(await this.usersService.validateCredentials(user.id, password))
+    ) {
       throw new BadRequestException('Invalid email or password');
     }
 
-    const accessToken = await this.tokensService.generateAccessToken(user);
-    const refreshToken = await this.tokensService.generateRefreshToken(
-      user,
-      WEEK_MS,
-    );
+    const [accessToken, refreshToken] = await Promise.all([
+      this.tokensService.generateAccessToken(user),
+      this.tokensService.generateRefreshToken(user, WEEK_MS),
+    ]);
 
     return this.buildResponsePayload(user, accessToken, refreshToken);
   }
 
   @Post('/refresh')
-  public async refresh(@Body() body: RefreshRequest) {
+  public async refresh(@Body() body: ITokenRequest) {
     if (!body.refreshToken) {
       throw new BadRequestException('Refresh token must be provided');
     }

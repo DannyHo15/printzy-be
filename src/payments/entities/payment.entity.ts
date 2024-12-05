@@ -2,7 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -34,21 +36,18 @@ export class Payment {
   @Column()
   clientId: number;
 
-  @OneToOne(() => Order, (order) => order.payment, {
+  @OneToMany(() => Order, (order) => order.payment, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  order: Order;
+  order: Order[];
 
   @Column({
     type: 'enum',
     enum: PaymentMethod,
-    default: PaymentMethod.BANK_TRANSFER,
+    default: PaymentMethod.VNPAY,
   })
   paymentMethod: PaymentMethod;
-
-  @Column()
-  orderId: number;
 
   @CreateDateColumn()
   createdAt: Date;

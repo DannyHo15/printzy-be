@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 
@@ -82,7 +86,7 @@ export class AddressesService {
     });
   }
 
-  public async findOne(id: number) {
+  public async findOne(id: number, user: User) {
     const address = await this.addressesRepository.findOne({
       where: { id },
       relations: {
@@ -95,6 +99,9 @@ export class AddressesService {
 
     if (!address) {
       throw new UnprocessableEntityException('Address is not found');
+    }
+    if (user.client.id !== address.client.id && user.role !== 'admin') {
+      throw new ForbiddenException();
     }
 
     return address;
@@ -138,8 +145,8 @@ export class AddressesService {
     return updatedAddress;
   }
 
-  public async remove(id: number) {
-    const address = await this.findOne(id);
+  public async remove(id: number, user: User) {
+    const address = await this.findOne(id, user);
 
     await this.addressesRepository.delete(id);
 

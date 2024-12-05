@@ -10,47 +10,33 @@ import {
   Req,
   Query,
   ForbiddenException,
-  BadRequestException,
 } from '@nestjs/common';
 
 import { JWTGuard } from '@authentication/jwt.guard';
 import { RolesGuard } from '@utils/guards/roles.guard';
 import { Roles } from '@utils/decorators/role.decorator';
-import { PurchasesService } from '@purchases/purchases.service';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { FindOrderDto } from './dto/find-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('orders')
+@ApiTags('orders')
 export class OrdersController {
-  constructor(
-    private readonly ordersService: OrdersService,
-    private readonly purchasesService: PurchasesService,
-  ) {}
+  constructor(private readonly ordersService: OrdersService) {}
 
   @UseGuards(JWTGuard, RolesGuard)
   @Roles('client')
   @Post()
   public async create(@Body() createOrderDto: CreateOrderDto, @Req() { user }) {
-    const order = await this.ordersService.create({
-      ...createOrderDto,
-      clientId: user.client?.id,
-    });
-
-    if (createOrderDto.purchases) {
-      for (const purchase of createOrderDto.purchases) {
-        if (!purchase.productId) {
-          throw new BadRequestException('Invalid purchase productId');
-        }
-
-        await this.purchasesService.create({
-          ...purchase,
-          clientId: user.client?.id,
-          orderId: order.id,
-        });
-      }
-    }
+    const order = await this.ordersService.create(
+      {
+        ...createOrderDto,
+        clientId: user.client?.id,
+      },
+      user,
+    );
 
     return order;
   }
@@ -68,7 +54,7 @@ export class OrdersController {
   public async findOne(@Param('id') id: string, @Req() { user }) {
     const order = await this.ordersService.findOne(+id);
 
-    if (user.client?.id !== order.clientId && user.role !== 'admin') {
+    if (user.client?.id !== order.client.id && user.role !== 'admin') {
       throw new ForbiddenException();
     }
 
@@ -85,7 +71,7 @@ export class OrdersController {
   ) {
     const order = await this.ordersService.findOne(+id);
 
-    if (user.client?.id !== order.clientId && user.role !== 'admin') {
+    if (user.client?.id !== order.client.id && user.role !== 'admin') {
       throw new ForbiddenException();
     }
 
@@ -100,7 +86,7 @@ export class OrdersController {
   public async remove(@Param('id') id: string, @Req() { user }) {
     const order = await this.ordersService.findOne(+id);
 
-    if (user.client?.id !== order.clientId && user.role !== 'admin') {
+    if (user.client?.id !== order.client.id && user.role !== 'admin') {
       throw new ForbiddenException();
     }
 

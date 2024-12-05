@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: AccessTokenPayload): Promise<User> {
     const { sub: id } = payload;
-
+    console.log(payload);
     const user = await this.users.findOne(id);
 
     if (!user) {
@@ -37,8 +37,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     if (user.role === 'client') {
-      const clients = await this.clients.findOne(user.id);
-
+      console.log(user);
+      const clients = await this.clients.findOne(user.client.id);
       user.client = clients;
     }
 

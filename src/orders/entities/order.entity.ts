@@ -6,6 +6,8 @@ import {
   Entity,
   getRepository,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -17,8 +19,9 @@ import { Address } from '@addresses/entities/address.entity';
 import { Client } from '@clients/entities/client.entity';
 import { Payment } from '@payments/entities/payment.entity';
 import { Purchase } from '@purchases/entities/purchase.entity';
-
-import { OrderStatus } from '@app/declarations';
+import { OrderStatus } from '@app/utils/types/order';
+import { OrderItem } from './orderItem.entity';
+import { Variant } from '@app/variants/entities/variant.entity';
 
 @Entity({ name: 'orders' })
 export class Order {
@@ -27,32 +30,22 @@ export class Order {
 
   @Column({
     type: 'enum',
-    enum: ['processing', 'delivery', 'completed', 'cancelled', 'refunded'],
-    default: 'processing',
+    enum: OrderStatus,
+    default: OrderStatus.PROCESSING,
   })
   status: OrderStatus;
 
-  @Column()
-  firstName: string;
+  @Column('decimal', { precision: 30, scale: 2 })
+  total: number;
 
-  @Column()
-  lastName: string;
-
-  @Column()
-  phone: string;
-
-  @Column()
-  email: string;
+  @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
+  orderItems: OrderItem[];
 
   @ManyToOne(() => Address, (address) => address.orders, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
-    nullable: true,
   })
   address: Address;
-
-  @Column({ nullable: true })
-  addressId: number;
 
   @ManyToOne(() => Client, (client) => client.orders, {
     onDelete: 'CASCADE',
@@ -60,21 +53,22 @@ export class Order {
   })
   client: Client;
 
-  @Column()
-  clientId: number;
-
-  @OneToOne(() => Payment, (payment) => payment.order, {
+  @ManyToOne(() => Payment, (payment) => payment.order, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn()
   payment: Payment;
 
-  @OneToMany(() => Purchase, (purchase) => purchase.order, {
+  @OneToOne(() => Purchase, (purchase) => purchase.order, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  purchases: Purchase[];
+  @JoinColumn()
+  purchase: Purchase;
+
+  @OneToMany(() => Variant, (variant) => variant.order)
+  variants: Variant[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -85,8 +79,7 @@ export class Order {
   orderNumber: string;
 
   @AfterInsert()
-  @AfterUpdate()
-  async setFormattedId() {
+  async generateOrderNumber() {
     this.orderNumber = `#ORDER-${this.id.toString().padStart(9, '0')}`;
     await getRepository(Order).save(this);
   }

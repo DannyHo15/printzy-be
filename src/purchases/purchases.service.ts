@@ -28,14 +28,8 @@ export class PurchasesService {
   ) {}
 
   public async create(createPurchaseDto: CreatePurchaseDto) {
-    const {
-      productId,
-      variantId,
-      customizeUploadId,
-      quantity,
-      orderId,
-      clientId,
-    } = createPurchaseDto;
+    const { quantity, orderId, clientId, transactionId, productId } =
+      createPurchaseDto;
 
     // Fetch the Product entity
     const product = await this.productsRepository.findOne({
@@ -45,36 +39,10 @@ export class PurchasesService {
       throw new UnprocessableEntityException('Product not found');
     }
 
-    // Optionally fetch the Variant entity if provided
-    let variant: Variant | null = null;
-    if (variantId) {
-      variant = await this.variantsRepository.findOne({
-        where: { id: variantId },
-      });
-      if (!variant) {
-        throw new UnprocessableEntityException('Variant not found');
-      }
-    }
-
-    // Optionally fetch the CustomizeUpload entity if provided
-    let customizeUpload: CustomizeUpload | null = null;
-    if (customizeUploadId) {
-      customizeUpload = await this.customizeUploadsRepository.findOne({
-        where: { id: customizeUploadId },
-      });
-      if (!customizeUpload) {
-        throw new UnprocessableEntityException('Customize Upload not found');
-      }
-    }
-
-    // Create the purchase entity
     const purchase = this.purchasesRepository.create({
-      product,
-      productId,
-      variant,
-      customizeUpload,
       quantity,
-      orderId,
+      transactionId,
+      order: { id: orderId },
       clientId,
     });
 

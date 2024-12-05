@@ -46,7 +46,7 @@ export class RevenueChartService {
       return {
         ...acc,
         [dateString]: {
-          sum: (acc[dateString]?.sum || 0) + +purchase.product.price,
+          // sum: (acc[dateString]?.sum || 0) + +purchase.product.price,
         },
       };
     }, {});

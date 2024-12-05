@@ -57,12 +57,7 @@ export class AddressesController {
   @UseGuards(JWTGuard)
   @Get(':id')
   public async findOne(@Param('id') id: string, @Req() { user }) {
-    const address = await this.addressesService.findOne(+id);
-    console.log(address.client.id, user.client.id);
-
-    if (user.client.id !== address.client.id && user.role !== 'admin') {
-      throw new ForbiddenException();
-    }
+    const address = await this.addressesService.findOne(+id, user);
 
     return address;
   }
@@ -87,7 +82,7 @@ export class AddressesController {
     @Body() updateAddressDto: UpdateAddressDto,
     @Req() { user },
   ) {
-    const address = await this.addressesService.findOne(+id);
+    const address = await this.addressesService.findOne(+id, user);
 
     if (user.client.id !== address.client.id && user.role !== 'admin') {
       throw new ForbiddenException();
@@ -103,13 +98,13 @@ export class AddressesController {
   @Roles('client')
   @Delete(':id')
   public async remove(@Param('id') id: string, @Req() { user }) {
-    const address = await this.addressesService.findOne(+id);
+    const address = await this.addressesService.findOne(+id, user);
     console.log(address);
     console.log(user);
     if (user?.client.id !== address.client.id) {
       throw new ForbiddenException();
     }
 
-    return this.addressesService.remove(+id);
+    return this.addressesService.remove(+id, user);
   }
 }

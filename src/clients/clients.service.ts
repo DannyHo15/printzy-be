@@ -1,21 +1,55 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import mapQueryToFindOptions from '@utils/map-query-to-find-options';
 import { CreateClientDto } from './dto/create-client.dto';
 import { FindClientDto } from './dto/find-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Client } from './entities/client.entity';
+import { UsersService } from '@app/users/users.service';
+import { TokensService } from '@app/authentication/tokens.service';
+import { WEEK_MS } from '@app/utils/variables';
 
 @Injectable()
 export class ClientsService {
   constructor(
     @InjectRepository(Client) private clientsRepository: Repository<Client>,
+    @InjectDataSource()
+    private dataSource: DataSource,
+    private readonly usersService: UsersService,
+    private readonly tokensService: TokensService,
   ) {}
 
   public async create(createClientDto: CreateClientDto) {
-    return this.clientsRepository.save(createClientDto);
+    const queryRunner = this.dataSource.createQueryRunner();
+    queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const client = await this.clientsRepository.save({
+        ...createClientDto,
+      });
+      const user = await this.usersService.create(
+        {
+          ...createClientDto,
+          role: 'client',
+        },
+        client,
+      );
+
+      await this.clientsRepository.update(client.id, { userId: user.id });
+
+      await queryRunner.commitTransaction();
+      return {
+        user: user,
+      };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error(error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   public async findAll(query: FindClientDto) {
@@ -85,12 +119,22 @@ export class ClientsService {
     });
 
     if (!client) {
-      throw new UnprocessableEntityException('Client is not found');
+      throw new UnprocessableEntityException({
+        message: 'Client is not found',
+        error: 'Unprocessable Entity',
+        statusCode: 422,
+      });
     }
 
-    const updatedClient = await this.clientsRepository.save({
-      id,
-      ...updateClientDto,
+    await this.clientsRepository
+      .createQueryBuilder()
+      .update(Client)
+      .set(updateClientDto)
+      .where('id = :id', { id })
+      .execute();
+
+    const updatedClient = await this.clientsRepository.findOne({
+      where: { id },
     });
 
     return updatedClient;

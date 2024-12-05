@@ -73,10 +73,7 @@ export class User {
   })
   gender: Gender;
 
-  @OneToOne(() => Client, (client) => client.user, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToOne(() => Client)
   @JoinColumn()
   client: Client;
 
@@ -85,18 +82,6 @@ export class User {
     onDelete: 'CASCADE',
   })
   refreshTokens: RefreshToken[];
-
-  // Add OneToMany relationship with Cart
-  @OneToMany(() => Cart, (cart) => cart.user, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @ApiProperty({
-    type: () => [Cart],
-    description: 'The carts associated with the user',
-    required: false,
-  })
-  carts: Cart[];
 
   // @OneToMany(() => Address, (address) => address.user, {
   //   onDelete: 'CASCADE',

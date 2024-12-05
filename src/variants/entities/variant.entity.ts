@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -10,6 +11,8 @@ import {
 import { VariantOptionValue } from './variant-option-value.entity';
 import { Product } from '@app/products/entities/product.entity';
 import { Upload } from '@app/uploads/entities/upload.entity';
+import { Order } from '@app/orders/entities/order.entity';
+import { OrderItem } from '@app/orders/entities/orderItem.entity';
 
 @Entity({ name: 'variants' })
 export class Variant {
@@ -48,6 +51,15 @@ export class Variant {
     },
   )
   variantOptionValues: VariantOptionValue[];
+
+  @ManyToOne(() => Order, (order) => order.variants, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  order: Order;
+
+  @ManyToMany(() => OrderItem, (orderItem) => orderItem.variant)
+  orderItems: OrderItem[];
 
   @OneToOne(() => Upload, {
     onDelete: 'SET NULL',

@@ -2,6 +2,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import {
   Connection,
+  DataSource,
   FindManyOptions,
   FindOneOptions,
   Repository,
@@ -13,44 +14,44 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { FindOrderDto } from './dto/find-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
+import { AddressesService } from '@app/addresses/addresses.service';
+import { User } from '@app/users/entities/user.entity';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private ordersRepository: Repository<Order>,
     @InjectConnection() private connection: Connection,
+    private readonly addressesService: AddressesService,
   ) {}
 
-  public async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    return new Promise((resolve) => {
-      this.connection.transaction(async (entityManager) => {
-        await Promise.all(
-          createOrderDto.purchases.map(async ({ productId }) => {
-            return await entityManager.save(Product, {
-              id: productId,
-              isAvailable: false,
-            });
-          }),
-        );
-
-        resolve(await entityManager.save(Order, createOrderDto));
+  public async create(createOrderDto: CreateOrderDto, user: User) {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    const address = await this.addressesService.findOne(
+      createOrderDto.addressId,
+      user,
+    );
+    try {
+      await queryRunner.manager.save(Order, {
+        ...createOrderDto,
+        address: { id: address.id },
+        status: createOrderDto.status,
       });
-    });
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
-
   public async findAll(query: FindOrderDto) {
     const findOptions = mapQueryToFindOptions(query);
 
     const [data, total] = await this.ordersRepository.findAndCount({
       ...findOptions,
-      relations: [
-        'purchases',
-        'purchases.product',
-        'purchases.variant',
-        'purchases.customizeUpload',
-        'address',
-        'payment',
-      ],
+      relations: ['address', 'payment'],
     } as FindManyOptions<Order>);
 
     return {
@@ -64,7 +65,6 @@ export class OrdersService {
   public async findOne(id: number) {
     const order = await this.ordersRepository.findOne({
       where: { id },
-      relations: ['purchases', 'purchases.product', 'address'],
     });
 
     if (!order) {
@@ -90,20 +90,20 @@ export class OrdersService {
           delete updateOrderDto.status;
         }
 
-        if (
-          updateOrderDto.status &&
-          order.status !== 'cancelled' &&
-          updateOrderDto.status === 'cancelled'
-        ) {
-          await Promise.all(
-            order.purchases.map(async ({ productId }) => {
-              return await entityManager.save(Product, {
-                id: productId,
-                isAvailable: true,
-              });
-            }),
-          );
-        }
+        // if (
+        //   updateOrderDto.status &&
+        //   order.status !== 'cancelled' &&
+        //   updateOrderDto.status === 'cancelled'
+        // ) {
+        //   await Promise.all(
+        //     order.purchase(async ({ productId }) => {
+        //       return await entityManager.save(Product, {
+        //         id: productId,
+        //         isAvailable: true,
+        //       });
+        //     }),
+        //   );
+        // }
 
         resolve(
           await entityManager.save(Order, {

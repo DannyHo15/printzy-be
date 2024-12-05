@@ -15,6 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
 import { User } from './entities/user.entity';
+import { Client } from '@app/clients/entities/client.entity';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +23,7 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
-  public async create(createUserDto: CreateUserDto) {
+  public async create(createUserDto: CreateUserDto, client?: Client) {
     const existingUser = await this.usersRepository.findOne({
       where: { email: createUserDto.email },
     });
@@ -31,12 +32,11 @@ export class UsersService {
       throw new BadRequestException('This email is already taken');
     }
 
-    const salt = await genSalt();
-
-    const hashedPassword = await hash(createUserDto.password, salt);
+    const hashedPassword = await hash(createUserDto.password, await genSalt());
 
     const createdUser = await this.usersRepository.save({
       ...createUserDto,
+      client,
       password: hashedPassword,
     });
 
@@ -59,15 +59,17 @@ export class UsersService {
   public async findOne(id: number) {
     const user = await this.usersRepository.findOne({
       where: { id },
+      relations: ['client'],
     });
 
     if (!user) {
-      throw new UnprocessableEntityException('User is not found');
+      throw new UnprocessableEntityException(`User with ID ${id} not found`);
     }
 
     return {
       ...user,
       fullName: user.fullName,
+      client: user.client,
     };
   }
 
@@ -111,7 +113,7 @@ export class UsersService {
   }
 
   public async update(id: number, updateUserDto: UpdateUserDto) {
-    const { password, confirmPassword, newPassword } = updateUserDto;
+    console.log('UPDATE', id, updateUserDto);
     const user = await this.usersRepository.findOne({
       where: { id },
     });
@@ -129,19 +131,28 @@ export class UsersService {
         throw new ConflictException('This email is already taken');
       }
     }
-    if (password && newPassword && confirmPassword) {
-      await this.changePassword(user, password, newPassword, confirmPassword);
+
+    // Handle password change if necessary
+    if (
+      updateUserDto.password &&
+      updateUserDto.newPassword &&
+      updateUserDto.confirmPassword
+    ) {
+      await this.changePassword(
+        user,
+        updateUserDto.password,
+        updateUserDto.newPassword,
+        updateUserDto.confirmPassword,
+      );
     }
 
-    try {
-      const updatedUser = await this.usersRepository.save({
-        id,
-        ...updateUserDto,
-      });
-      return updatedUser;
-    } catch (error) {
-      throw new InternalServerErrorException('Failed to update user');
-    }
+    // Filter out undefined properties
+    const updatedUser = await this.usersRepository.save({
+      ...user, // Keep existing user properties
+      ...updateUserDto, // Update with new values
+    });
+
+    return updatedUser;
   }
 
   public async remove(id: number) {

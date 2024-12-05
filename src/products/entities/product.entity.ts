@@ -2,13 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Purchase } from 'src/purchases/entities/purchase.entity';
 import { Upload } from 'src/uploads/entities/upload.entity';
 import { Photo } from 'src/photos/entities/photo.entity';
 import { Wishlist } from '@app/wishlists/entities/wishlists.entity';
@@ -17,6 +17,7 @@ import { Variant } from '@app/variants/entities/variant.entity';
 import { Collection } from '@app/collections/entities/collection.entity';
 import { ProductOption } from './product-option.entity';
 import { CategoryProduct } from './category-product.entity';
+import { Order } from '@app/orders/entities/order.entity';
 
 @Entity({ name: 'products' })
 export class Product {
@@ -29,7 +30,7 @@ export class Product {
   @Column('int', { nullable: true, default: 0 })
   discountPercent: number;
 
-  @Column()
+  @Column({ length: 100, nullable: false, default: '' })
   name: string;
 
   @Column('text')
@@ -60,12 +61,6 @@ export class Product {
 
   @Column({ nullable: true })
   collectionId: number;
-
-  @OneToMany(() => Purchase, (purchase) => purchase.product, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  purchases: Purchase[];
 
   @ManyToOne(() => Upload, (upload) => upload.products, {
     onDelete: 'SET NULL',

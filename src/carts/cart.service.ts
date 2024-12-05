@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
@@ -6,6 +6,7 @@ import { CartItem } from './entities/cart-item.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
+import { warn } from 'console';
 
 @Injectable()
 export class CartService {
@@ -22,9 +23,9 @@ export class CartService {
     private variantRepository: Repository<Variant>, // Inject Variant repository
   ) {}
 
-  async getCartByUser(userId: number): Promise<Cart> {
+  async getCartByUser(clientId: number): Promise<Cart> {
     let cart = await this.cartRepository.findOne({
-      where: { userId },
+      where: { clientId },
       relations: [
         'cartItems',
         'cartItems.product',
@@ -33,7 +34,7 @@ export class CartService {
     });
 
     if (!cart) {
-      cart = this.cartRepository.create({ userId, cartItems: [] });
+      cart = this.cartRepository.create({ clientId, cartItems: [] });
       await this.cartRepository.save(cart);
     }
 
@@ -53,16 +54,17 @@ export class CartService {
     });
 
     if (!product) {
-      throw new Error('Product not found');
+      throw new NotFoundException('Product not found');
     }
 
     let variant = null;
+    console.log('variantId::::::::', variantId);
     if (variantId) {
       variant = await this.variantRepository.findOne({
         where: { id: variantId },
       });
       if (!variant) {
-        throw new Error('Variant not found');
+        throw new NotFoundException('Variant not found');
       }
     }
 
@@ -92,7 +94,15 @@ export class CartService {
       await this.cartItemRepository.save(cartItem);
     }
 
-    return this.cartRepository.save(cart);
+    return this.cartRepository.findOne({
+      where: { id: cart.id },
+      relations: [
+        'cartItems',
+        'cartItems.product',
+        'cartItems.variant',
+        'cartItems.variant.variantOptionValues.optionValue',
+      ],
+    });
   }
 
   async updateCartItem(
