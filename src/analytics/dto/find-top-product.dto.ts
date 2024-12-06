@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 
-export class FindOrdersStatusesDto {
+export class FindTopProductDto {
   @ApiProperty()
   @IsOptional()
   startDate?: Date;

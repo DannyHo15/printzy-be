@@ -13,10 +13,6 @@ import { ProductsModule } from '@products/products.module';
 import { PurchasesModule } from '@purchases/purchases.module';
 import { UploadsModule } from '@uploads/uploads.module';
 import { PhotosModule } from '@photos/photos.module';
-import { RevenueChartModule } from '@charts/revenue-chart/revenue-chart.module';
-import { CategoriesPieModule } from '@charts/categories-pie/categories-pie.module';
-import { OrdersStatusesChartModule } from '@charts/orders-statuses-chart/orders-statuses-chart.module';
-import { OrdersCountChartModule } from '@charts/orders-count-chart/orders-count-chart.module';
 import { CartModule } from '@app/carts/cart.module';
 import { ormConfig } from './ormconfig';
 import { WishlistModule } from '@app/wishlists/wishlists.module';
@@ -32,6 +28,7 @@ import { SeedModule } from './database/relational/seed.module';
 import { ShipModule } from './ship/ship.module';
 import { ShipmentModule } from './shipment/shipment.module';
 import { SampleImageModule } from './sample-image/sample-image.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -53,10 +50,6 @@ import { SampleImageModule } from './sample-image/sample-image.module';
     PurchasesModule,
     UploadsModule,
     PhotosModule,
-    RevenueChartModule,
-    CategoriesPieModule,
-    OrdersStatusesChartModule,
-    OrdersCountChartModule,
     CartModule,
     WishlistModule,
     CustomizeUploadsModule,
@@ -71,6 +64,7 @@ import { SampleImageModule } from './sample-image/sample-image.module';
     ShipModule,
     ShipmentModule,
     SampleImageModule,
+    AnalyticsModule,
   ],
   controllers: [],
   providers: [],

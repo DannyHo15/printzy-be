@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -17,7 +16,6 @@ import { Variant } from '@app/variants/entities/variant.entity';
 import { Collection } from '@app/collections/entities/collection.entity';
 import { ProductOption } from './product-option.entity';
 import { CategoryProduct } from './category-product.entity';
-import { Order } from '@app/orders/entities/order.entity';
 
 @Entity({ name: 'products' })
 export class Product {

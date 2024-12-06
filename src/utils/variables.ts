@@ -30,6 +30,7 @@ export const ORDER_STATUSES = [
 export enum ERole {
   ADMIN = 'admin',
   CLIENT = 'client',
+  EMPLOYEE = 'employee',
 }
 
 export enum EGender {
