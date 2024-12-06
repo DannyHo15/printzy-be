@@ -31,6 +31,7 @@ import { WardModule } from './ward/ward.module';
 import { SeedModule } from './database/relational/seed.module';
 import { ShipModule } from './ship/ship.module';
 import { ShipmentModule } from './shipment/shipment.module';
+import { SampleImageModule } from './sample-image/sample-image.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { ShipmentModule } from './shipment/shipment.module';
     SeedModule,
     ShipModule,
     ShipmentModule,
+    SampleImageModule,
   ],
   controllers: [],
   providers: [],
