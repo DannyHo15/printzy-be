@@ -29,9 +29,6 @@ export class AddressSeedService {
       'code',
     );
     await this.processFile<Ward>('wards.json', this.wardRepository, 'code');
-    console.log(
-      'Provinces, districts, and wards have been successfully processed.',
-    );
   }
 
   private async processFile<T>(
@@ -87,10 +84,6 @@ export class AddressSeedService {
               } as any);
             }
           }
-
-          console.log(
-            `Updated entity with ${uniqueField.toString()}: ${entity[uniqueField]}`,
-          );
         } else {
           const { districts, wards, ...data } = entity as any;
           // Insert new entity
@@ -101,9 +94,6 @@ export class AddressSeedService {
           }
           // const newEntity = repository.create(entity);
           await repository.save(entity);
-          console.log(
-            `Inserted new entity with ${uniqueField.toString()}: ${entity[uniqueField]}`,
-          );
         }
       });
 

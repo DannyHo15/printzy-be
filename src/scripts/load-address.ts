@@ -30,11 +30,9 @@ export class AppService {
   }
 
   private async fetchAndSaveData(url: string, fileName: string): Promise<any> {
-    console.log(`Loading data from ${url}`);
     const response = await firstValueFrom(this.httpService.get(url));
     const data = response.data;
     this.saveFile(fileName, data);
-    console.log(`${fileName} is loaded and saved.`);
     return data;
   }
 

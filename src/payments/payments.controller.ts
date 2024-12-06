@@ -62,7 +62,6 @@ export class PaymentsController {
     @Body() createPaymentDto: CreatePaymentDto,
     @Req() user,
   ) {
-    console.log('createPaymentDto', createPaymentDto);
     const payment = await this.paymentsService.create({
       ...createPaymentDto,
     });

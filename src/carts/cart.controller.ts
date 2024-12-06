@@ -27,8 +27,8 @@ export class CartController {
   @Roles('client')
   @Get('')
   getCart(@Req() { user }) {
-    const clientId = user.client.id;
-    return this.cartService.getCartByUser(clientId);
+    const userId = user.id;
+    return this.cartService.getCartByUser(userId);
   }
 
   @UseGuards(JWTGuard, RolesGuard)

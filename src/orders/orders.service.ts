@@ -51,7 +51,12 @@ export class OrdersService {
 
     const [data, total] = await this.ordersRepository.findAndCount({
       ...findOptions,
-      relations: ['address', 'payment'],
+      relations: [
+        'address',
+        'payment',
+        'client.user',
+        'orderItems.variant.product',
+      ],
     } as FindManyOptions<Order>);
 
     return {

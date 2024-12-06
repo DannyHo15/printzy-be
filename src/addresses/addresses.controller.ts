@@ -48,9 +48,7 @@ export class AddressesController {
     @Query() query: PaginateQuery,
     @Req() { user },
   ): Promise<Paginated<Address>> {
-    console.log(user);
     const clientId = user.client.id;
-    console.log(clientId);
     return this.addressesService.findAll(query, clientId);
   }
 
@@ -99,8 +97,6 @@ export class AddressesController {
   @Delete(':id')
   public async remove(@Param('id') id: string, @Req() { user }) {
     const address = await this.addressesService.findOne(+id, user);
-    console.log(address);
-    console.log(user);
     if (user?.client.id !== address.client.id) {
       throw new ForbiddenException();
     }

@@ -20,9 +20,6 @@ export class Purchase {
   @Column()
   transactionId: string;
 
-  @Column('int')
-  quantity: number;
-
   @OneToOne(() => Order, (order) => order.purchase, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

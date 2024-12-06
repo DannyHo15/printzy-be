@@ -18,10 +18,13 @@ export class Cart {
   @ApiProperty()
   id: number;
 
-  @ApiProperty()
-  @OneToOne(() => Client)
-  @JoinColumn()
-  clientId: number;
+  @ManyToOne(() => User, (user) => user.carts, {
+    onDelete: 'CASCADE',
+  })
+  user: User;
+
+  @Column()
+  userId: number;
 
   @ApiProperty()
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart, {

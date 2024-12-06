@@ -17,13 +17,4 @@ export class CreatePurchaseDto {
   @ApiProperty()
   @IsOptional()
   clientId: number;
-
-  @ApiProperty({
-    description: 'Quantity of the product in the purchase',
-    example: 1,
-  })
-  @IsInt()
-  @Min(1)
-  @IsNotEmpty()
-  quantity: number;
 }

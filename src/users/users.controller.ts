@@ -61,7 +61,6 @@ export class UsersController {
     type: User,
   })
   public async findOne(@Param('id') id: string, @Req() { user }) {
-    console.log(user.id, id);
     if (user.id !== +id && user.role !== 'admin') {
       throw new BadRequestException("You can't access this user");
     }

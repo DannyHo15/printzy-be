@@ -25,7 +25,6 @@ export class PaymentsService {
         createPaymentDto.sum,
         `Payment for order #${createPaymentDto.orderId}`,
       );
-      console.log('vnpUrl', vnpUrl);
       return { paymentUrl: vnpUrl };
     }
   }

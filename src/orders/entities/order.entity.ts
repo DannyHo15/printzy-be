@@ -1,13 +1,10 @@
 import {
   AfterInsert,
-  AfterUpdate,
   Column,
   CreateDateColumn,
   Entity,
   getRepository,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,

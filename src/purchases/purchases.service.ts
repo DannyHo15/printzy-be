@@ -1,6 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 
 import mapQueryToFindOptions from '@utils/map-query-to-find-options';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
@@ -8,8 +8,6 @@ import { FindPurchaseDto } from './dto/find-purchase.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { Purchase } from './entities/purchase.entity';
 import { Product } from '@products/entities/product.entity';
-import { Variant } from '@app/variants/entities/variant.entity';
-import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 
 @Injectable()
 export class PurchasesService {
@@ -19,17 +17,10 @@ export class PurchasesService {
 
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
-
-    @InjectRepository(Variant)
-    private variantsRepository: Repository<Variant>,
-
-    @InjectRepository(CustomizeUpload)
-    private customizeUploadsRepository: Repository<CustomizeUpload>,
   ) {}
 
   public async create(createPurchaseDto: CreatePurchaseDto) {
-    const { quantity, orderId, clientId, transactionId, productId } =
-      createPurchaseDto;
+    const { orderId, clientId, transactionId, productId } = createPurchaseDto;
 
     // Fetch the Product entity
     const product = await this.productsRepository.findOne({
@@ -40,21 +31,20 @@ export class PurchasesService {
     }
 
     const purchase = this.purchasesRepository.create({
-      quantity,
       transactionId,
       order: { id: orderId },
       clientId,
     });
-
-    // Save the purchase to the database
     return this.purchasesRepository.save(purchase);
   }
 
   public async findAll(query: FindPurchaseDto) {
     const findOptions = mapQueryToFindOptions(query);
 
-    const [data, total] =
-      await this.purchasesRepository.findAndCount(findOptions);
+    const [data, total] = await this.purchasesRepository.findAndCount({
+      ...findOptions,
+      relations: ['client.user', 'order.payment'],
+    } as FindManyOptions<Purchase>);
 
     return {
       $limit: findOptions.take,

@@ -18,7 +18,6 @@ import { UserReview } from '@app/reviews/entities/review.entity';
 import { EGender, ERole } from '@app/utils/variables';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { Address } from '@app/addresses/entities/address.entity';
 @Entity({ name: 'users' })
 export class User {
   @PrimaryGeneratedColumn()
@@ -82,6 +81,17 @@ export class User {
     onDelete: 'CASCADE',
   })
   refreshTokens: RefreshToken[];
+
+  @OneToMany(() => Cart, (cart) => cart.user, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @ApiProperty({
+    type: () => [Cart],
+    description: 'The carts associated with the user',
+    required: false,
+  })
+  carts: Cart[];
 
   // @OneToMany(() => Address, (address) => address.user, {
   //   onDelete: 'CASCADE',

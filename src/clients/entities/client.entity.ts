@@ -3,27 +3,30 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { User } from '@users/entities/user.entity';
 import { Address } from '@addresses/entities/address.entity';
 import { Order } from '@orders/entities/order.entity';
 import { Payment } from '@payments/entities/payment.entity';
 import { Purchase } from '@purchases/entities/purchase.entity';
 import { IsOptional } from 'class-validator';
+import { User } from '@app/users/entities/user.entity';
 
 @Entity({ name: 'clients' })
 export class Client {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // @OneToOne(() => User)
-  // user: User;
+  @OneToOne(() => User, (user) => user.client, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  user: User;
 
   @Column({ nullable: true })
   @IsOptional()

@@ -23,9 +23,9 @@ export class CartService {
     private variantRepository: Repository<Variant>, // Inject Variant repository
   ) {}
 
-  async getCartByUser(clientId: number): Promise<Cart> {
+  async getCartByUser(userId: number): Promise<Cart> {
     let cart = await this.cartRepository.findOne({
-      where: { clientId },
+      where: { userId },
       relations: [
         'cartItems',
         'cartItems.product',
@@ -34,7 +34,7 @@ export class CartService {
     });
 
     if (!cart) {
-      cart = this.cartRepository.create({ clientId, cartItems: [] });
+      cart = this.cartRepository.create({ userId, cartItems: [] });
       await this.cartRepository.save(cart);
     }
 
@@ -58,7 +58,6 @@ export class CartService {
     }
 
     let variant = null;
-    console.log('variantId::::::::', variantId);
     if (variantId) {
       variant = await this.variantRepository.findOne({
         where: { id: variantId },
@@ -87,7 +86,7 @@ export class CartService {
         cart,
         quantity,
         customizeUpload,
-        variant, // Assign variant to the cart item
+        variant,
       });
 
       cart.cartItems.push(cartItem);
