@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsNumber,
   IsBoolean,
+  IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -50,6 +51,11 @@ export class CreateVariantDto {
   @ValidateNested({ each: true })
   @Type(() => VariantOptionValueDto)
   optionValues: VariantOptionValueDto[];
+
+  @ApiProperty({ required: false, type: Object, default: null })
+  @IsOptional()
+  @IsObject()
+  customizeModel?: Record<string, any>;
 }
 
 export class VariantOptionValueDto {

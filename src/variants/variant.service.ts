@@ -41,6 +41,7 @@ export class VariantsService {
       sku: createVariantDto.sku,
       isAvailable: createVariantDto.isAvailable,
       isInStock: createVariantDto.isInStock,
+      customizeModel: createVariantDto.customizeModel,
       upload,
     });
 
@@ -107,6 +108,7 @@ export class VariantsService {
     variant.sku = updateVariantDto.sku;
     variant.isAvailable = updateVariantDto.isAvailable;
     variant.isInStock = updateVariantDto.isInStock;
+    variant.customizeModel = updateVariantDto.customizeModel;
     variant.upload = upload;
     await this.variantRepository.save(variant);
 

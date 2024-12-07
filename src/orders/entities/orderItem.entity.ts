@@ -1,6 +1,14 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+} from 'typeorm';
 import { Order } from './order.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
+import { Upload } from '@app/uploads/entities/upload.entity';
 
 @Entity('order_items')
 export class OrderItem {
@@ -19,5 +27,12 @@ export class OrderItem {
   quantity: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  unitPrice: number; // You can store the price here for historical data
+  unitPrice: number;
+
+  @OneToOne(() => Upload, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  upload: Upload;
 }

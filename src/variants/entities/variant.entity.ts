@@ -67,4 +67,7 @@ export class Variant {
   })
   @JoinColumn()
   upload: Upload;
+
+  @Column('json', { nullable: true })
+  customizeModel: any;
 }
