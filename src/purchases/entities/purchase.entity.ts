@@ -21,7 +21,7 @@ export class Purchase {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   transactionId: string;
 
   @OneToOne(() => Order, (order) => order.purchase, {

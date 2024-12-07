@@ -12,6 +12,10 @@ import { Address } from '@app/addresses/entities/address.entity';
 import { Client } from '@app/clients/entities/client.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
 import { OrderItem } from './entities/orderItem.entity';
+import {
+  Purchase,
+  PurchaseStatus,
+} from '@app/purchases/entities/purchase.entity';
 
 @Injectable()
 export class OrdersService {
@@ -23,6 +27,8 @@ export class OrdersService {
     @InjectRepository(Address) private addressesRepository: Repository<Address>,
     @InjectRepository(Client) private clientsRepository: Repository<Client>,
     @InjectRepository(Variant) private variantsRepository: Repository<Variant>,
+    @InjectRepository(Purchase)
+    private purchasesRepository: Repository<Purchase>,
   ) {}
 
   public async create(createOrderDto: CreateOrderDto) {
@@ -95,6 +101,17 @@ export class OrdersService {
     // Update total price of the order
     order.total = total;
     await this.ordersRepository.save(order);
+
+    const purchase = this.purchasesRepository.create({
+      transactionId: null, // Example of transaction ID, could be dynamic
+      order,
+      client,
+      status: PurchaseStatus.PENDING, // Default status is 'Pending'
+      clientId: client ? client.id : null, // Optional: if client exists
+    });
+
+    // Save the purchase
+    await this.purchasesRepository.save(purchase);
 
     return order;
   }

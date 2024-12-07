@@ -15,6 +15,7 @@ import { User } from '@app/users/entities/user.entity';
 import { Client } from '@app/clients/entities/client.entity';
 import { Payment } from '@app/payments/entities/payment.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
+import { Purchase } from '@app/purchases/entities/purchase.entity';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Variant } from '@app/variants/entities/variant.entity';
       Client,
       Payment,
       Variant,
+      Purchase,
     ]),
     forwardRef(() => PurchasesModule),
   ],
