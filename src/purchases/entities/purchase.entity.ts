@@ -24,7 +24,7 @@ export class Purchase {
   @Column({ nullable: true })
   transactionId: string;
 
-  @OneToOne(() => Order, (order) => order.purchase, {
+  @OneToOne(() => Order, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

@@ -68,7 +68,7 @@ export class OrdersService {
       address,
       payment,
       client,
-      orderItems: [],
+      orderNumber: Math.random().toString(36).substr(2, 9).toUpperCase(),
     });
 
     // Save order (without items)
@@ -99,26 +99,23 @@ export class OrdersService {
       });
 
       orderItems.push(orderItem);
-      total += itemDto.unitPrice * itemDto.quantity; // Calculate total
+      total += itemDto.unitPrice * itemDto.quantity;
     }
 
-    // Save order items
     await this.orderItemsRepository.save(orderItems);
-
-    // Update total price of the order
-    order.total = total;
-    await this.ordersRepository.save(order);
-
+    order.orderItems = orderItems;
     const purchase = this.purchasesRepository.create({
-      transactionId: null, // Example of transaction ID, could be dynamic
+      transactionId: null,
       order,
       client,
-      status: PurchaseStatus.PENDING, // Default status is 'Pending'
-      clientId: client ? client.id : null, // Optional: if client exists
+      status: PurchaseStatus.PENDING,
+      clientId: client ? client.id : null,
     });
 
-    // Save the purchase
     await this.purchasesRepository.save(purchase);
+
+    order.total = total;
+    await this.ordersRepository.save(order);
 
     return order;
   }

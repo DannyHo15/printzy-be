@@ -1,9 +1,7 @@
 import {
-  AfterInsert,
   Column,
   CreateDateColumn,
   Entity,
-  getRepository,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -57,13 +55,6 @@ export class Order {
   @JoinColumn()
   payment: Payment;
 
-  @OneToOne(() => Purchase, (purchase) => purchase.order, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn()
-  purchase: Purchase;
-
   @OneToMany(() => Variant, (variant) => variant.order)
   variants: Variant[];
 
@@ -72,13 +63,7 @@ export class Order {
 
   @UpdateDateColumn()
   updatedAt: Date;
-  
+
   @Column({ unique: true })
   orderNumber: string;
-
-  @AfterInsert()
-  async generateOrderNumber() {
-    this.orderNumber = `#ORDER-${this.id.toString().padStart(9, '0')}`;
-    await getRepository(Order).save(this);
-  }
 }
