@@ -30,13 +30,10 @@ export class OrdersController {
   @Roles('client')
   @Post()
   public async create(@Body() createOrderDto: CreateOrderDto, @Req() { user }) {
-    const order = await this.ordersService.create(
-      {
-        ...createOrderDto,
-        clientId: user.client?.id,
-      },
-      user,
-    );
+    const order = await this.ordersService.create({
+      ...createOrderDto,
+      clientId: user.client?.id,
+    });
 
     return order;
   }

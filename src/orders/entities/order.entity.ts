@@ -72,6 +72,7 @@ export class Order {
 
   @UpdateDateColumn()
   updatedAt: Date;
+  
   @Column({ unique: true })
   orderNumber: string;
 

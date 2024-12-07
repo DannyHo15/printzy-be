@@ -44,12 +44,6 @@ export class Client {
   })
   orders: Order[];
 
-  @OneToMany(() => Payment, (payment) => payment.client, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  payments: Payment[];
-
   @OneToMany(() => Purchase, (purchase) => purchase.client, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

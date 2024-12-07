@@ -9,6 +9,7 @@ import { FindPaymentDto } from './dto/find-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { Payment } from './entities/payment.entity';
 import { VnpayService } from './vnpay.service';
+import { CreateVnpayPaymentUrlDTO } from './dto/create-vnpay-payment-url.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -18,15 +19,8 @@ export class PaymentsService {
   ) {}
 
   public async create(createPaymentDto: CreatePaymentDto) {
-    this.paymentsRepository.save(createPaymentDto);
-    if (createPaymentDto.paymentMethod === 'vnpay') {
-      const vnpUrl = this.vnpayService.createPaymentUrl(
-        createPaymentDto.orderId.toString(),
-        createPaymentDto.sum,
-        `Payment for order #${createPaymentDto.orderId}`,
-      );
-      return { paymentUrl: vnpUrl };
-    }
+    const payment = await this.paymentsRepository.save(createPaymentDto);
+    return payment;
   }
 
   public async findAll(query: FindPaymentDto) {
@@ -81,7 +75,7 @@ export class PaymentsService {
   }
 
   public async createVnpayPaymentUrl(
-    createPaymentDto: CreatePaymentDto,
+    createPaymentDto: CreateVnpayPaymentUrlDTO,
     headers: any,
     connection: any,
     socket: any,

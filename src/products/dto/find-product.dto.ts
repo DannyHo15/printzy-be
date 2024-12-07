@@ -28,29 +28,13 @@ export class FindProductDto {
   @IsOptional()
   isAvailable?: boolean | IFieldQuery<boolean>;
 
-  @ApiProperty()
+  @ApiProperty({ type: [Number], required: false })
   @IsOptional()
-  description?: string | IFieldQuery<string>;
-
-  @ApiProperty()
-  @IsOptional()
-  categoryId?: number;
+  categoryId?: number | number[];
 
   @ApiProperty()
   @IsOptional()
   collectionId?: number;
-
-  @ApiProperty()
-  @IsOptional()
-  uploadId?: number;
-
-  @ApiProperty()
-  @IsOptional()
-  createdAt?: Date | IFieldQuery<Date>;
-
-  @ApiProperty()
-  @IsOptional()
-  updatedAt?: Date | IFieldQuery<Date>;
 
   @IsOptional()
   @IsObject()

@@ -1,6 +1,38 @@
 import { OrderStatus } from '@app/utils/types/order';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsInt, Min, IsEnum } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsInt,
+  Min,
+  IsEnum,
+  IsArray,
+} from 'class-validator';
+
+export class CreateOrderItemDto {
+  @ApiProperty({
+    description: 'ID of the product variant',
+    example: 1,
+  })
+  @IsNotEmpty()
+  variantId: number;
+
+  @ApiProperty({
+    description: 'Quantity of the product variant',
+    example: 2,
+  })
+  @IsInt()
+  @Min(1)
+  quantity: number;
+
+  @ApiProperty({
+    description: 'Unit price of the product variant',
+    example: 100.0,
+  })
+  @IsInt()
+  @Min(0)
+  unitPrice: number;
+}
 
 export class CreateOrderDto {
   @ApiProperty({
@@ -23,28 +55,17 @@ export class CreateOrderDto {
   status?: OrderStatus;
 
   @ApiProperty({
-    description: 'ID of the product variant, if applicable',
-    required: false,
+    description: 'ID of the client',
+    example: 1,
   })
-  @IsOptional()
-  variantId?: number;
-
   @IsOptional()
   clientId: number;
 
-  @ApiProperty({ description: 'Quantity of the variant', example: 1 })
-  @IsInt()
-  @Min(1)
-  quantity: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  productId: number;
-
   @ApiProperty({
-    description: 'ID of the customization upload, if applicable',
-    required: false,
+    description: 'Array of order items',
+    type: [CreateOrderItemDto],
+    required: true,
   })
-  @IsOptional()
-  customizeUploadId?: number;
+  @IsArray()
+  orderItems: CreateOrderItemDto[];
 }

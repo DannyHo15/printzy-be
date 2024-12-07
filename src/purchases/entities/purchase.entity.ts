@@ -10,8 +10,12 @@ import {
 } from 'typeorm';
 import { Client } from '@clients/entities/client.entity';
 import { Order } from '@orders/entities/order.entity';
-import { Product } from '@products/entities/product.entity';
 
+export enum PurchaseStatus {
+  PENDING = 'Pending',
+  COMPLETED = 'Completed',
+  FAILED = 'Failed',
+}
 @Entity({ name: 'purchases' })
 export class Purchase {
   @PrimaryGeneratedColumn()
@@ -38,4 +42,11 @@ export class Purchase {
 
   @Column()
   clientId: number;
+
+  @Column({
+    type: 'enum',
+    enum: PurchaseStatus,
+    default: PurchaseStatus.PENDING,
+  })
+  status: PurchaseStatus;
 }

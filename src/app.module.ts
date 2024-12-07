@@ -29,6 +29,7 @@ import { ShipModule } from './ship/ship.module';
 import { ShipmentModule } from './shipment/shipment.module';
 import { SampleImageModule } from './sample-image/sample-image.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { VNPayModule } from './vn-pay/vn-pay.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ShipmentModule,
     SampleImageModule,
     AnalyticsModule,
+    VNPayModule,
   ],
   controllers: [],
   providers: [],

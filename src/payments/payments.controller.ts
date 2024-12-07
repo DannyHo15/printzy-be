@@ -10,35 +10,27 @@ import {
   Req,
   Query,
   ForbiddenException,
-  BadRequestException,
 } from '@nestjs/common';
-// import { InjectStripe } from 'nestjs-stripe';
-import Stripe from 'stripe';
 
 import { JWTGuard } from '@authentication/jwt.guard';
 import { RolesGuard } from '@utils/guards/roles.guard';
 import { Roles } from '@utils/decorators/role.decorator';
-import { KOPECKS_IN_RUBLE } from '@utils/variables';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { FindPaymentDto } from './dto/find-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { VnpayService } from './vnpay.service';
-import { User } from '@app/users/entities/user.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreateVnpayPaymentUrlDTO } from './dto/create-vnpay-payment-url.dto';
 
 @Controller('payment')
 @ApiTags('Payment')
 @ApiBearerAuth()
 export class PaymentsController {
-  constructor(
-    private readonly paymentsService: PaymentsService,
-    // @InjectStripe() private readonly stripeClient: Stripe,
-    private readonly vnpayService: VnpayService,
-  ) {}
+  constructor(private readonly paymentsService: PaymentsService) {}
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('client')
+  @Roles('admin')
   @Post()
   public async create(
     @Body() createPaymentDto: CreatePaymentDto,
@@ -46,12 +38,8 @@ export class PaymentsController {
   ) {
     const payment = await this.paymentsService.create({
       ...createPaymentDto,
-      clientId: user.client?.id,
     });
 
-    if (createPaymentDto.paymentMethod === 'vnpay') {
-      return { paymentUrl: payment.paymentUrl };
-    }
     return null;
   }
 
@@ -79,12 +67,8 @@ export class PaymentsController {
 
   @UseGuards(JWTGuard)
   @Get(':id')
-  public async findOne(@Param('id') id: string, @Req() { user }) {
+  public async findOne(@Param('id') id: string) {
     const payment = await this.paymentsService.findOne(+id);
-
-    if (user.client?.id !== payment.clientId && user.role !== 'admin') {
-      throw new ForbiddenException();
-    }
 
     return payment;
   }
@@ -95,29 +79,18 @@ export class PaymentsController {
   public async update(
     @Param('id') id: string,
     @Body() updatePaymentDto: UpdatePaymentDto,
-    @Req() { user },
   ) {
     const payment = await this.paymentsService.findOne(+id);
 
-    if (user.client?.id !== payment.clientId && user.role !== 'admin') {
-      throw new ForbiddenException();
-    }
-
     return this.paymentsService.update(+id, {
       ...updatePaymentDto,
-      clientId: user.client?.id,
-      sum: payment.sum,
     });
   }
 
   @UseGuards(JWTGuard)
   @Delete(':id')
-  public async remove(@Param('id') id: string, @Req() { user }) {
+  public async remove(@Param('id') id: string) {
     const payment = await this.paymentsService.findOne(+id);
-
-    if (user.client?.id !== payment.clientId && user.role !== 'admin') {
-      throw new ForbiddenException();
-    }
 
     return this.paymentsService.remove(+id);
   }
@@ -125,7 +98,7 @@ export class PaymentsController {
   @UseGuards(JWTGuard)
   @Post('vnpay/create_payment_url')
   public async createPaymentUrl(
-    @Body() createPaymentDto: CreatePaymentDto,
+    @Body() createPaymentDto: CreateVnpayPaymentUrlDTO,
     @Req() { user, headers, connection, socket },
   ) {
     return this.paymentsService.createVnpayPaymentUrl(

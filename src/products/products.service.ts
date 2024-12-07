@@ -63,7 +63,8 @@ export class ProductsService {
   }
 
   public async findAll(query: FindProductDto) {
-    const { options, ...otherQueryParams } = query;
+    const { options, categoryId, ...otherQueryParams } = query;
+
     const findOptions = mapQueryToFindOptions(otherQueryParams);
 
     findOptions.relations = [
@@ -74,6 +75,17 @@ export class ProductsService {
       'productOptions.productOptionValues',
       'productOptions.productOptionValues.optionValue',
     ];
+
+    if (categoryId) {
+      findOptions.where = {
+        ...findOptions.where,
+        categoryProducts: {
+          category: {
+            id: Array.isArray(categoryId) ? In(categoryId) : categoryId,
+          },
+        },
+      };
+    }
 
     if (options) {
       findOptions.where = {
