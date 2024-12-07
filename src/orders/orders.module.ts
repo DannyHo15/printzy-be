@@ -16,6 +16,7 @@ import { Client } from '@app/clients/entities/client.entity';
 import { Payment } from '@app/payments/entities/payment.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
 import { Purchase } from '@app/purchases/entities/purchase.entity';
+import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { Purchase } from '@app/purchases/entities/purchase.entity';
       Payment,
       Variant,
       Purchase,
+      CustomizeUpload,
     ]),
     forwardRef(() => PurchasesModule),
   ],

@@ -32,6 +32,13 @@ export class CreateOrderItemDto {
   @IsInt()
   @Min(0)
   unitPrice: number;
+
+  @ApiProperty({
+    description: 'ID of the customize upload',
+    example: 1,
+  })
+  @IsNotEmpty()
+  customizeUploadId: number;
 }
 
 export class CreateOrderDto {

@@ -16,6 +16,7 @@ import {
   Purchase,
   PurchaseStatus,
 } from '@app/purchases/entities/purchase.entity';
+import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 
 @Injectable()
 export class OrdersService {
@@ -27,12 +28,13 @@ export class OrdersService {
     @InjectRepository(Address) private addressesRepository: Repository<Address>,
     @InjectRepository(Client) private clientsRepository: Repository<Client>,
     @InjectRepository(Variant) private variantsRepository: Repository<Variant>,
+    @InjectRepository(CustomizeUpload)
+    private customizesUploadRepository: Repository<CustomizeUpload>,
     @InjectRepository(Purchase)
     private purchasesRepository: Repository<Purchase>,
   ) {}
 
   public async create(createOrderDto: CreateOrderDto) {
-    // Validate and get address from repository
     const address = await this.addressesRepository.findOne({
       where: { id: createOrderDto.addressId },
     });
@@ -84,11 +86,16 @@ export class OrdersService {
         throw new UnprocessableEntityException('Variant not found');
       }
 
+      const customizeUpload = await this.customizesUploadRepository.findOne({
+        where: { id: itemDto.customizeUploadId },
+      });
+
       const orderItem = this.orderItemsRepository.create({
         order,
         variant,
         quantity: itemDto.quantity,
         unitPrice: itemDto.unitPrice,
+        customizeUpload,
       });
 
       orderItems.push(orderItem);
