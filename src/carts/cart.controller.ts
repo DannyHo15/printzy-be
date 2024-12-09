@@ -8,11 +8,11 @@ import {
   Get,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { RemoveCartItemDto } from './dto/remove-cart-item.dto';
 import { JWTGuard } from '@app/authentication/jwt.guard';
 import { RolesGuard } from '@app/utils/guards/roles.guard';
 import { Roles } from '@app/utils/decorators/role.decorator';
@@ -54,7 +54,7 @@ export class CartController {
     @Body() updateCartItemDto: UpdateCartItemDto,
   ) {
     const userId = user.id;
-    const { productId, quantity, variantId } = updateCartItemDto; // Include variantId
+    const { productId, quantity, variantId } = updateCartItemDto;
     return this.cartService.updateCartItem(
       userId,
       productId,
@@ -68,10 +68,10 @@ export class CartController {
   @Delete('remove')
   removeCartItem(
     @Req() { user },
-    @Body() removeCartItemDto: RemoveCartItemDto,
+    @Query('productId') productId: number,
+    @Query('variantId') variantId: number,
   ) {
     const userId = user.id;
-    const { productId, variantId } = removeCartItemDto;
     return this.cartService.removeCartItem(userId, productId, variantId);
   }
 

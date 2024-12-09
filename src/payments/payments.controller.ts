@@ -43,20 +43,6 @@ export class PaymentsController {
     return null;
   }
 
-  @UseGuards(JWTGuard, RolesGuard)
-  @Roles('client')
-  @Post('vnpay/create_payment_url')
-  async createVnpayPayment(
-    @Body() createPaymentDto: CreatePaymentDto,
-    @Req() user,
-  ) {
-    const payment = await this.paymentsService.create({
-      ...createPaymentDto,
-    });
-
-    return { data: payment };
-  }
-
   @UseGuards(JWTGuard)
   @Get()
   public async findAll(@Query() query: FindPaymentDto, @Req() { user }) {

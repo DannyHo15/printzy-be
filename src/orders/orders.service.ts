@@ -68,7 +68,7 @@ export class OrdersService {
       address,
       payment,
       client,
-      orderNumber: Math.random().toString(36).substr(2, 9).toUpperCase(),
+      orderNumber: `PZ-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
     });
 
     // Save order (without items)
@@ -95,7 +95,7 @@ export class OrdersService {
         variant,
         quantity: itemDto.quantity,
         unitPrice: itemDto.unitPrice,
-        customizeUpload,
+        customizeUpload: itemDto.customizeUploadId ? customizeUpload : null,
       });
 
       orderItems.push(orderItem);
@@ -144,6 +144,16 @@ export class OrdersService {
   public async findOne(id: number) {
     const order = await this.ordersRepository.findOne({
       where: { id },
+      relations: [
+        'address',
+        'address.province',
+        'address.district',
+        'address.ward',
+        'payment',
+        'client.user',
+        'orderItems.variant.product',
+        'orderItems.customizeUpload',
+      ],
     });
 
     if (!order) {

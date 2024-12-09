@@ -28,6 +28,7 @@ export class CartService {
       where: { userId },
       relations: [
         'cartItems',
+        'cartItems.customizeUpload',
         'cartItems.product',
         'cartItems.variant.variantOptionValues.optionValue',
       ],
@@ -67,8 +68,12 @@ export class CartService {
       }
     }
 
+    // Check for existing cart item based on product, variant, and customizeUploadId
     const existingCartItem = cart.cartItems.find(
-      (item) => item.product.id === productId && item.variant?.id === variantId, // Check if same product and variant
+      (item) =>
+        item.product.id === productId &&
+        item.variant?.id === variantId &&
+        item.customizeUpload?.id === customizeUploadId, // Include customizeUploadId in the condition
     );
 
     if (existingCartItem) {
@@ -100,6 +105,7 @@ export class CartService {
         'cartItems.product',
         'cartItems.variant',
         'cartItems.variant.variantOptionValues.optionValue',
+        'cartItems.customizeUpload', // Add customizeUpload to the relations
       ],
     });
   }
@@ -108,7 +114,7 @@ export class CartService {
     userId: number,
     productId: number,
     quantity: number,
-    variantId?: number, // Add variantId for updating the specific variant
+    variantId?: number,
   ): Promise<Cart> {
     const cart = await this.getCartByUser(userId);
     const cartItem = cart.cartItems.find(

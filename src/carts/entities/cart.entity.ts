@@ -4,13 +4,10 @@ import {
   OneToMany,
   ManyToOne,
   Column,
-  OneToOne,
-  JoinColumn,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { CartItem } from './cart-item.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Client } from '@app/clients/entities/client.entity';
 
 @Entity({ name: 'carts' })
 export class Cart {

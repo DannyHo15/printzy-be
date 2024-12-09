@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  OneToOne,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -24,7 +23,6 @@ export class CartItem {
   @ApiProperty()
   quantity: number;
 
-  @ApiProperty()
   @ManyToOne(() => Product, (product) => product.id, {
     onDelete: 'CASCADE',
     eager: true,
@@ -36,25 +34,30 @@ export class CartItem {
   })
   cart: Cart;
 
-  @ApiProperty()
-  @OneToOne(() => Variant, { nullable: true })
+  @ManyToOne(() => Variant, { nullable: true })  // Thay @OneToOne bằng @ManyToOne
   @JoinColumn()
   variant: Variant;
 
-  @ApiProperty()
-  @OneToOne(() => CustomizeUpload, {
+  @ManyToOne(() => CustomizeUpload, {
     onDelete: 'SET NULL',
     nullable: true,
   })
   @JoinColumn()
   customizeUpload: CustomizeUpload;
 
-  @ApiProperty()
   @Column()
   productId: number;
+
+  @Column({ nullable: true })
+  variantId: number;
+
+  @Column({ nullable: true })
+  customizeUploadId: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 }
+

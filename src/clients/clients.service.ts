@@ -62,12 +62,12 @@ export class ClientsService {
     // Query to get both totalPaymentSum and cartItemCount for each client
     const clientData = await this.clientsRepository
       .createQueryBuilder('client')
-      .leftJoin('client.payments', 'payment')
+      .leftJoin('client.orders', 'order')
       .leftJoin('client.user', 'user')
       .leftJoin('user.carts', 'cart')
       .leftJoin('cart.cartItems', 'cartItem')
       .select('client.id', 'clientId')
-      .addSelect('SUM(payment.sum)', 'totalPaymentSum')
+      .addSelect('SUM(order.total)', 'totalPaymentSum')
       .addSelect('COUNT(cartItem.id)', 'cartItemCount')
       .groupBy('client.id')
       .getRawMany();
