@@ -8,6 +8,7 @@ import { FindPurchaseDto } from './dto/find-purchase.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { Purchase } from './entities/purchase.entity';
 import { Product } from '@products/entities/product.entity';
+import { Order } from '@app/orders/entities/order.entity';
 
 @Injectable()
 export class PurchasesService {
@@ -17,6 +18,9 @@ export class PurchasesService {
 
     @InjectRepository(Product)
     private productsRepository: Repository<Product>,
+
+    @InjectRepository(Order)
+    private ordersRepository: Repository<Order>,
   ) {}
 
   public async create(createPurchaseDto: CreatePurchaseDto) {
@@ -57,6 +61,18 @@ export class PurchasesService {
   public async findOne(id: number) {
     const purchase = await this.purchasesRepository.findOne({
       where: { id },
+    });
+
+    if (!purchase) {
+      throw new UnprocessableEntityException('Purchase not found');
+    }
+
+    return purchase;
+  }
+
+  public async findOneByOrderId(orderId: number) {
+    const purchase = await this.purchasesRepository.findOne({
+      where: { order: { id: orderId } },
     });
 
     if (!purchase) {

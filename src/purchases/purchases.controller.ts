@@ -59,6 +59,18 @@ export class PurchasesController {
   }
 
   @UseGuards(JWTGuard)
+  @Get('/order/:id')
+  public async findOneByOrderId(@Param('id') id: string, @Req() { user }) {
+    const purchase = await this.purchasesService.findOneByOrderId(+id);
+
+    if (user.client?.id !== purchase.clientId && user.role !== 'admin') {
+      throw new ForbiddenException();
+    }
+
+    return purchase;
+  }
+
+  @UseGuards(JWTGuard)
   @Get(':id')
   public async findOne(@Param('id') id: string, @Req() { user }) {
     const purchase = await this.purchasesService.findOne(+id);

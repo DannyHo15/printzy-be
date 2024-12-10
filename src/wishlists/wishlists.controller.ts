@@ -6,6 +6,7 @@ import {
   Body,
   Req,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 
 import { AddToWishlistDto } from './dto/add-to-wishlist.dto';
@@ -34,16 +35,15 @@ export class WishlistController {
   // Remove a product from the wishlist
   @UseGuards(JWTGuard, RolesGuard)
   @Roles('client')
-  @Delete('remove')
+  @Delete('remove/:productId')
   async removeFromWishlist(
-    @Body() removeFromWishlistDto: RemoveFromWishlistDto,
+    @Param('productId') productId: string,
     @Req() { user },
   ) {
     const userId = user.id;
-    return this.wishlistService.removeFromWishlist(
-      userId,
-      removeFromWishlistDto,
-    );
+    return this.wishlistService.removeFromWishlist(userId, {
+      productId: +productId,
+    });
   }
 
   // Get all wishlist products for a user

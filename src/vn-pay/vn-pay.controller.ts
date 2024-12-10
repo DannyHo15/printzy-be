@@ -1,7 +1,7 @@
 import { Controller, Query, Get } from '@nestjs/common';
 import { VNPayService } from './vn-pay.service';
 
-@Controller('IPN')
+@Controller('ipn')
 export class VNPayController {
   constructor(private readonly vnPayService: VNPayService) {}
 

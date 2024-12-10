@@ -56,6 +56,13 @@ export class CreateOrderDto {
   @IsNotEmpty()
   paymentId: number;
 
+  @ApiProperty({
+    description: 'ID of the payment',
+    example: 1,
+  })
+  @IsNotEmpty()
+  shippingFee: number;
+
   @ApiProperty({ enum: OrderStatus, default: OrderStatus.PROCESSING })
   @IsEnum(OrderStatus)
   @IsOptional()

@@ -3,6 +3,11 @@ import { IsInt, IsNotEmpty, IsString, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateReviewDto {
+  @ApiProperty({ description: 'The content of the title' })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
   @ApiProperty({ description: 'The content of the review' })
   @IsString()
   @IsNotEmpty()

@@ -24,7 +24,7 @@ export class ReviewsService {
     createReviewDto: CreateReviewDto,
     userId: number,
   ): Promise<UserReview> {
-    const { review, rating, productId } = createReviewDto;
+    const { title, review, rating, productId } = createReviewDto;
 
     const product = await this.productRepository.findOne({
       where: { id: productId },
@@ -39,6 +39,7 @@ export class ReviewsService {
     }
 
     const userReview = this.userReviewRepository.create({
+      title,
       review,
       rating,
       product,

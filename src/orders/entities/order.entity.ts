@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -13,7 +12,6 @@ import {
 import { Address } from '@addresses/entities/address.entity';
 import { Client } from '@clients/entities/client.entity';
 import { Payment } from '@payments/entities/payment.entity';
-import { Purchase } from '@purchases/entities/purchase.entity';
 import { OrderStatus } from '@app/utils/types/order';
 import { OrderItem } from './orderItem.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
@@ -32,6 +30,9 @@ export class Order {
 
   @Column('decimal', { precision: 30, scale: 2 })
   total: number;
+
+  @Column('decimal', { precision: 30, scale: 2 })
+  shippingFee: number;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.order)
   orderItems: OrderItem[];

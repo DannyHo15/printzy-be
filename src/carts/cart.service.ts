@@ -30,6 +30,7 @@ export class CartService {
         'cartItems',
         'cartItems.customizeUpload',
         'cartItems.product',
+        'cartItems.variant.upload',
         'cartItems.variant.variantOptionValues.optionValue',
       ],
     });

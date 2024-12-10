@@ -10,7 +10,7 @@ import { AppModule } from '@app/app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.setGlobalPrefix('api', { exclude: ['IPN'] });
+  app.setGlobalPrefix('api');
 
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 

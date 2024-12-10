@@ -69,6 +69,7 @@ export class OrdersService {
       payment,
       client,
       orderNumber: `PZ-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      shippingFee: createOrderDto.shippingFee,
     });
 
     // Save order (without items)
@@ -123,13 +124,28 @@ export class OrdersService {
   public async findAll(query: FindOrderDto) {
     const findOptions = mapQueryToFindOptions(query);
 
+    if ('clientId' in findOptions.where) {
+      delete findOptions.where['clientId'];
+    }
+    if (query.clientId) {
+      findOptions.where = {
+        ...findOptions.where,
+        client: { id: query.clientId },
+      };
+    }
+
     const [data, total] = await this.ordersRepository.findAndCount({
       ...findOptions,
       relations: [
         'address',
+        'address.province',
+        'address.district',
+        'address.ward',
         'payment',
         'client.user',
         'orderItems.variant.product',
+        'orderItems.variant.upload',
+        'orderItems.customizeUpload',
       ],
     } as FindManyOptions<Order>);
 
@@ -152,6 +168,7 @@ export class OrdersService {
         'payment',
         'client.user',
         'orderItems.variant.product',
+        'orderItems.variant.upload',
         'orderItems.customizeUpload',
       ],
     });
