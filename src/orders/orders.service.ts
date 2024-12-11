@@ -124,6 +124,7 @@ export class OrdersService {
   public async findAll(query: FindOrderDto) {
     const findOptions = mapQueryToFindOptions(query);
 
+    findOptions.where = findOptions.where || {};
     if ('clientId' in findOptions.where) {
       delete findOptions.where['clientId'];
     }

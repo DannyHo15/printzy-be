@@ -15,9 +15,6 @@ export class VNPayService {
   ) {}
 
   validateSecureHash(params: any, secureHash: string): boolean {
-    delete params.vnp_SecureHash;
-
-    // Sắp xếp các tham số theo tên (key)
     const sortedParams = Object.keys(params)
       .sort()
       .reduce((obj, key) => {
@@ -25,35 +22,30 @@ export class VNPayService {
         return obj;
       }, {});
 
-    // Tạo chuỗi tham số theo định dạng của VNPay
-    let queryString = '';
-    for (const [key, value] of Object.entries(sortedParams)) {
-      queryString += `${key}=${value}&`;
-    }
-    queryString = queryString.slice(0, -1); // Loại bỏ dấu "&" cuối cùng
+    const signData = Object.keys(sortedParams)
+      .map(
+        (key) =>
+          `${key}=${encodeURIComponent(sortedParams[key]).replace(/%20/g, '+')}`,
+      )
+      .join('&');
 
     const secretKey = process.env.VNP_HASHSECRET;
-    const hashData = queryString + `&vnp_SecureHashType=SHA256&${secretKey}`;
 
-    // Tạo mã hash bằng thuật toán SHA256
-    const generatedHash = crypto
-      .createHash('sha256')
-      .update(hashData)
-      .digest('hex')
-      .toLowerCase();
+    const crypto = require('crypto');
+    const hmac = crypto.createHmac('sha512', secretKey);
+    const generatedHash = hmac
+      .update(Buffer.from(signData, 'utf-8'))
+      .digest('hex');
 
-    // So sánh mã hash đã tạo với mã hash nhận được
-    return generatedHash === secureHash.toLowerCase();
+    return secureHash.toLowerCase() === generatedHash.toLowerCase();
   }
 
-  // Xử lý kết quả giao dịch và cập nhật trạng thái Purchase
-  async processTransaction(params: any) {
+  async processTransaction(params: any, orderNumber: string) {
     const responseCode = params.vnp_ResponseCode;
     const transactionNo = params.vnp_TransactionNo;
 
-    // Tìm Purchase dựa trên transactionId (vnp_TransactionNo)
     const purchase = await this.purchaseRepository.findOne({
-      where: { transactionId: transactionNo },
+      where: { order: { orderNumber } },
       relations: ['order', 'client'],
     });
 
@@ -63,7 +55,7 @@ export class VNPayService {
         message: 'Purchase not found',
       };
     }
-
+    purchase.transactionId = transactionNo;
     // Cập nhật trạng thái của Purchase
     switch (responseCode) {
       case '00':

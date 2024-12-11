@@ -7,21 +7,28 @@ export class VNPayController {
 
   @Get('')
   async handleIPN(@Query() queryParams: any): Promise<any> {
-    const secureHash = queryParams.vnp_SecureHash;
-    delete queryParams.vnp_SecureHash;
+    const secureHash = queryParams['vnp_SecureHash'];
 
-    // Xác thực mã hash
+    delete queryParams['vnp_SecureHash'];
+    delete queryParams['vnp_SecureHashType'];
+
     const isValid = this.vnPayService.validateSecureHash(
       queryParams,
       secureHash,
     );
 
     if (!isValid) {
-      return { status: 'error', message: 'Invalid SecureHash' };
+      return { RspCode: '97', Message: 'Invalid SecureHash' };
     }
 
-    const result = await this.vnPayService.processTransaction(queryParams);
+    const orderNumber = queryParams['vnp_TxnRef'];
+    await this.vnPayService.processTransaction(queryParams, orderNumber);
+    const rspCode = queryParams['vnp_ResponseCode'];
 
-    return result;
+    if (rspCode === '00') {
+      return { RspCode: '00', Message: 'Success' };
+    } else {
+      return { RspCode: rspCode, Message: 'Transaction failed' };
+    }
   }
 }
