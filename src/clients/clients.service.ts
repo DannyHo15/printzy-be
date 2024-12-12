@@ -45,7 +45,6 @@ export class ClientsService {
       };
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      console.error(error);
       throw error;
     } finally {
       await queryRunner.release();
@@ -59,7 +58,6 @@ export class ClientsService {
     const [clients, total] =
       await this.clientsRepository.findAndCount(findOptions);
 
-    // Query to get both totalPaymentSum and cartItemCount for each client
     const clientData = await this.clientsRepository
       .createQueryBuilder('client')
       .leftJoin('client.orders', 'order')

@@ -18,7 +18,11 @@ export class FindClientDto {
 
   @ApiProperty()
   @IsOptional()
-  userId?: number;
+  name?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  email?: string;
 
   @ApiProperty()
   @IsOptional()

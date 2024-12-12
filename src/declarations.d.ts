@@ -27,9 +27,11 @@ export interface RefreshTokenPayload {
   sub: number;
 }
 
-export type Role = 'admin' | 'client';
+export type Role = 'admin' | 'client' | 'employee';
 
 export type Gender = 'male' | 'female' | 'other';
 export type Owner = 'user' | 'client';
 
 export type Status = 'wait' | 'success' | 'fail';
+
+export type StatusPurchase = 'Pending' | 'Completed' | 'Failed' | 'Refunded';

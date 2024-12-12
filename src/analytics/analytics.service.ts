@@ -28,6 +28,7 @@ export class AnalyticsService {
       .innerJoin('orderItem.order', 'order')
       .select('product.id', 'productId')
       .addSelect('product.sku', 'productSKU')
+      .addSelect('SUM(orderItem.quantity)', 'totalQuantity')
       .groupBy('product.id')
       .addGroupBy('product.sku')
       .orderBy('SUM(orderItem.quantity)', 'DESC');
@@ -56,6 +57,7 @@ export class AnalyticsService {
       .innerJoin('categoryProduct.category', 'category') // Liên kết với Category
       .select('category.id', 'categoryId') // ID của danh mục
       .addSelect('category.name', 'categoryName') // Tên danh mục
+      .addSelect('SUM(orderItem.quantity)', 'totalQuantity')
       .groupBy('category.id')
       .addGroupBy('category.name')
       .orderBy('SUM(orderItem.quantity)', 'DESC'); // Sắp xếp theo tổng số lượng

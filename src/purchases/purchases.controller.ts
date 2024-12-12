@@ -83,28 +83,14 @@ export class PurchasesController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('client')
+  @Roles('admin', 'employee')
   @Patch(':id')
   public async update(
     @Param('id') id: string,
     @Body() updatePurchaseDto: UpdatePurchaseDto,
-    @Req() { user },
   ) {
-    const purchase = await this.purchasesService.findOne(+id);
-
-    if (user.client?.id !== purchase.clientId && user.role !== 'admin') {
-      throw new ForbiddenException();
-    }
-
-    const order = await this.ordersService.findOne(updatePurchaseDto.orderId);
-
-    if (order.client.id !== user.client?.id) {
-      throw new BadRequestException('Unknown order');
-    }
-
     return this.purchasesService.update(+id, {
       ...updatePurchaseDto,
-      clientId: user.client?.id,
     });
   }
 

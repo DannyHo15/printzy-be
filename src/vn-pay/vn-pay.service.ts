@@ -6,12 +6,16 @@ import {
   Purchase,
   PurchaseStatus,
 } from '@app/purchases/entities/purchase.entity';
+import { Order } from '@app/orders/entities/order.entity';
+import { OrderStatus } from '@app/utils/types/order';
 
 @Injectable()
 export class VNPayService {
   constructor(
     @InjectRepository(Purchase)
     private readonly purchaseRepository: Repository<Purchase>,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
   ) {}
 
   validateSecureHash(params: any, secureHash: string): boolean {
@@ -56,29 +60,40 @@ export class VNPayService {
       };
     }
     purchase.transactionId = transactionNo;
+
+    const order = await this.orderRepository.findOne({
+      where: { orderNumber },
+    });
     // Cập nhật trạng thái của Purchase
     switch (responseCode) {
       case '00':
         purchase.status = PurchaseStatus.COMPLETED;
+        order.status = OrderStatus.COMPLETED;
         break;
       case '01':
       case '11':
         purchase.status = PurchaseStatus.FAILED;
+        order.status = OrderStatus.CANCELLED;
         break;
       case '02':
         purchase.status = PurchaseStatus.FAILED;
+        order.status = OrderStatus.CANCELLED;
         break;
       case '04':
         purchase.status = PurchaseStatus.FAILED;
+        order.status = OrderStatus.CANCELLED;
         break;
       case '05':
         purchase.status = PurchaseStatus.FAILED;
+        order.status = OrderStatus.CANCELLED;
         break;
       case '10':
         purchase.status = PurchaseStatus.FAILED;
+        order.status = OrderStatus.CANCELLED;
         break;
       default:
         purchase.status = PurchaseStatus.FAILED;
+        order.status = OrderStatus.CANCELLED;
         break;
     }
 

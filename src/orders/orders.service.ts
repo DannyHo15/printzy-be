@@ -63,7 +63,7 @@ export class OrdersService {
 
     // Create new order
     const order = this.ordersRepository.create({
-      status: createOrderDto.status,
+      // status: createOrderDto.status,
       total: 0,
       address,
       payment,

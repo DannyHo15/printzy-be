@@ -63,10 +63,10 @@ export class CreateOrderDto {
   @IsNotEmpty()
   shippingFee: number;
 
-  @ApiProperty({ enum: OrderStatus, default: OrderStatus.PROCESSING })
-  @IsEnum(OrderStatus)
-  @IsOptional()
-  status?: OrderStatus;
+  // @ApiProperty({ enum: OrderStatus, default: OrderStatus.PROCESSING })
+  // @IsEnum(OrderStatus)
+  // @IsOptional()
+  // status?: OrderStatus;
 
   @ApiProperty({
     description: 'ID of the client',

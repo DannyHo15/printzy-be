@@ -28,8 +28,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiProperty({ enum: ['admin', 'client'], nullable: true })
-  @IsIn(['admin', 'client'])
+  @ApiProperty({ enum: ['admin', 'client', 'employee'], nullable: true })
+  @IsIn(['admin', 'client', 'employee'])
   @IsOptional()
   role?: Role;
 }

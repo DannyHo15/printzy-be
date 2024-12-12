@@ -79,7 +79,7 @@ export class UsersController {
       throw new ForbiddenException();
     }
 
-    return this.usersService.update(+id, { ...updateUserDto, role: user.role });
+    return this.usersService.update(+id, { ...updateUserDto });
   }
 
   @UseGuards(JWTGuard)

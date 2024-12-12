@@ -15,6 +15,7 @@ export enum PurchaseStatus {
   PENDING = 'Pending',
   COMPLETED = 'Completed',
   FAILED = 'Failed',
+  REFUNDED = 'Refunded',
 }
 @Entity({ name: 'purchases' })
 export class Purchase {

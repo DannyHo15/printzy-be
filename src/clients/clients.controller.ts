@@ -36,11 +36,10 @@ export class ClientsController {
   }
 
   @UseGuards(JWTGuard)
+  @Roles('admin', 'client')
   @Get()
   public async findAll(@Query() query: FindClientDto, @Req() { user }) {
-    return this.clientsService.findAll(
-      user.role === 'admin' ? query : { ...query, userId: user.id },
-    );
+    return this.clientsService.findAll(query);
   }
 
   @UseGuards(JWTGuard)
