@@ -6,8 +6,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'customize-uploads' })
-export class CustomizeUpload {
+@Entity({ name: 'customize-prints' })
+export class CustomizePrint {
   @PrimaryGeneratedColumn()
   id: number;
 

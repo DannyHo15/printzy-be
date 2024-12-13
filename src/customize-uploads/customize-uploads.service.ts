@@ -4,16 +4,25 @@ import { Repository } from 'typeorm';
 
 import { CreateCustomizeUploadDto } from './dto/create-customize-upload.dto';
 import { CustomizeUpload } from './entities/customize-upload.entity';
+import { CustomizePrint } from './entities/customize-print.entity';
 
 @Injectable()
 export class CustomizeUploadsService {
   constructor(
     @InjectRepository(CustomizeUpload)
     private customizeUploadsRepository: Repository<CustomizeUpload>,
+    @InjectRepository(CustomizePrint)
+    private customizePrintsRepository: Repository<CustomizePrint>,
   ) {}
 
   public async create(createCustomizeUploadDto: CreateCustomizeUploadDto) {
     return this.customizeUploadsRepository.save({
+      ...createCustomizeUploadDto,
+    });
+  }
+
+  public async createPrint(createCustomizeUploadDto: CreateCustomizeUploadDto) {
+    return this.customizePrintsRepository.save({
       ...createCustomizeUploadDto,
     });
   }

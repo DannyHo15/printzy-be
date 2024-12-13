@@ -44,6 +44,23 @@ export class CustomizeUploadsController {
     });
   }
 
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('print')
+  public async createPrintFile(@UploadedFile('file') file) {
+    const fileUrl = await this.firebaseStorageService.uploadFile(file);
+
+    return this.customizeUploadsService.createPrint({
+      originalName: file.originalname,
+      fileName: file.originalname,
+      path: fileUrl,
+      internalPath: fileUrl,
+      size: String(file.size),
+      mimetype: file.mimetype,
+    });
+  }
+
   @Get(':id')
   public async findOne(@Param('id') id: string) {
     return this.customizeUploadsService.findOne(+id);

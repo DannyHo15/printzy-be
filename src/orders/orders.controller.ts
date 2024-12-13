@@ -59,7 +59,7 @@ export class OrdersController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('client', 'admin')
+  @Roles('admin')
   @Patch(':id')
   public async update(
     @Param('id') id: string,
@@ -67,10 +67,6 @@ export class OrdersController {
     @Req() { user },
   ) {
     const order = await this.ordersService.findOne(+id);
-
-    if (user.client?.id !== order.client.id && user.role !== 'admin') {
-      throw new ForbiddenException();
-    }
 
     return this.ordersService.update(+id, {
       ...updateOrderDto,

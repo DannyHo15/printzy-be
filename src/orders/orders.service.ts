@@ -198,47 +198,47 @@ export class OrdersService {
     }
 
     // If there are new items or changes to existing items, handle it here
-    if (updateOrderDto.orderItems) {
-      const orderItems = await this.orderItemsRepository.find({
-        where: { order: { id } },
-      });
+    // if (updateOrderDto.orderItems) {
+    //   const orderItems = await this.orderItemsRepository.find({
+    //     where: { order: { id } },
+    //   });
 
-      // Update or delete old order items if needed
-      for (const itemDto of updateOrderDto.orderItems) {
-        const existingItem = orderItems.find(
-          (item) => item.variant.id === itemDto.variantId,
-        );
+    //   // Update or delete old order items if needed
+    //   for (const itemDto of updateOrderDto.orderItems) {
+    //     const existingItem = orderItems.find(
+    //       (item) => item.variant.id === itemDto.variantId,
+    //     );
 
-        if (existingItem) {
-          existingItem.quantity = itemDto.quantity;
-          existingItem.unitPrice = itemDto.unitPrice;
-          await this.orderItemsRepository.save(existingItem);
-        } else {
-          const variant = await this.variantsRepository.findOne({
-            where: { id: itemDto.variantId },
-          });
-          if (!variant) {
-            throw new UnprocessableEntityException('Variant not found');
-          }
-          const newOrderItem = this.orderItemsRepository.create({
-            order,
-            variant,
-            quantity: itemDto.quantity,
-            unitPrice: itemDto.unitPrice,
-          });
-          await this.orderItemsRepository.save(newOrderItem);
-        }
-      }
-    }
+    //     if (existingItem) {
+    //       existingItem.quantity = itemDto.quantity;
+    //       existingItem.unitPrice = itemDto.unitPrice;
+    //       await this.orderItemsRepository.save(existingItem);
+    //     } else {
+    //       const variant = await this.variantsRepository.findOne({
+    //         where: { id: itemDto.variantId },
+    //       });
+    //       if (!variant) {
+    //         throw new UnprocessableEntityException('Variant not found');
+    //       }
+    //       const newOrderItem = this.orderItemsRepository.create({
+    //         order,
+    //         variant,
+    //         quantity: itemDto.quantity,
+    //         unitPrice: itemDto.unitPrice,
+    //       });
+    //       await this.orderItemsRepository.save(newOrderItem);
+    //     }
+    //   }
+    // }
 
     // Recalculate the total price
-    const updatedOrderItems = await this.orderItemsRepository.find({
-      where: { order: { id } },
-    });
-    order.total = updatedOrderItems.reduce(
-      (sum, item) => sum + item.unitPrice * item.quantity,
-      0,
-    );
+    // const updatedOrderItems = await this.orderItemsRepository.find({
+    //   where: { order: { id } },
+    // });
+    // order.total = updatedOrderItems.reduce(
+    //   (sum, item) => sum + item.unitPrice * item.quantity,
+    //   0,
+    // );
     await this.ordersRepository.save(order);
 
     return order;

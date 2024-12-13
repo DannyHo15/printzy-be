@@ -10,6 +10,7 @@ import { Order } from './order.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
 import { Upload } from '@app/uploads/entities/upload.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
+import { CustomizePrint } from '@app/customize-uploads/entities/customize-print.entity';
 
 @Entity('order_items')
 export class OrderItem {
@@ -36,4 +37,11 @@ export class OrderItem {
   })
   @JoinColumn()
   customizeUpload: CustomizeUpload;
+
+  @OneToOne(() => CustomizePrint, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  customizePrint: CustomizePrint;
 }
