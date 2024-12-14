@@ -26,6 +26,10 @@ export class FindClientDto {
 
   @ApiProperty()
   @IsOptional()
+  isActive?: boolean;
+
+  @ApiProperty()
+  @IsOptional()
   createdAt?: Date | IFieldQuery<Date>;
 
   @ApiProperty()

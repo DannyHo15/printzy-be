@@ -25,6 +25,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
+import { RolesGuard } from '@app/utils/guards/roles.guard';
+import { Roles } from '@utils/decorators/role.decorator';
 
 @ApiBearerAuth()
 @ApiTags('users')
@@ -32,8 +34,8 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @UseGuards(JWTGuard, RolesGuard)
-  // @Roles('admin')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @Post()
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({
@@ -82,7 +84,8 @@ export class UsersController {
     return this.usersService.update(+id, { ...updateUserDto });
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @Delete(':id')
   public async remove(@Param('id') id: string, @Req() { user }) {
     if (String(user.id) !== id && user.role !== 'admin') {

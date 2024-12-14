@@ -52,8 +52,18 @@ export class ClientsService {
   }
 
   public async findAll(query: FindClientDto) {
-    const findOptions = mapQueryToFindOptions(query);
+    const { isActive, ...otherQuery } = query;
+    const findOptions = mapQueryToFindOptions(otherQuery);
     findOptions.relations = ['user', 'addresses'];
+
+    if (typeof isActive !== 'undefined') {
+      findOptions.where = {
+        ...(findOptions.where || {}),
+        user: {
+          isActive, // Add the filter condition for isActive
+        },
+      };
+    }
 
     const [clients, total] =
       await this.clientsRepository.findAndCount(findOptions);
@@ -67,6 +77,9 @@ export class ClientsService {
       .select('client.id', 'clientId')
       .addSelect('SUM(order.total)', 'totalPaymentSum')
       .addSelect('COUNT(cartItem.id)', 'cartItemCount')
+      .where('user.isActive IS NULL OR user.isActive = :isActive', {
+        isActive: typeof isActive === 'undefined' ? true : isActive,
+      })
       .groupBy('client.id')
       .getRawMany();
 

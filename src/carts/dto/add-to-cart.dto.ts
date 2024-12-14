@@ -17,6 +17,10 @@ export class AddToCartDto {
 
   @ApiProperty()
   @IsInt()
+  customizePrintId: number;
+
+  @ApiProperty()
+  @IsInt()
   @IsPositive()
   quantity: number;
 }

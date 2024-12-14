@@ -36,12 +36,19 @@ export class CartController {
   @Post('add')
   addToCart(@Req() { user }, @Body() addToCartDto: AddToCartDto) {
     const userId = user.id;
-    const { productId, quantity, customizeUploadId, variantId } = addToCartDto; // Include variantId
+    const {
+      productId,
+      quantity,
+      customizeUploadId,
+      customizePrintId,
+      variantId,
+    } = addToCartDto;
     return this.cartService.addToCart(
       userId,
       productId,
       quantity,
       customizeUploadId,
+      customizePrintId,
       variantId, // Pass variantId to service
     );
   }

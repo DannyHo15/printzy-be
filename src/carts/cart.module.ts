@@ -7,6 +7,7 @@ import { CartItem } from './entities/cart-item.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
+import { CustomizePrint } from '@app/customize-uploads/entities/customize-print.entity';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { Variant } from '@app/variants/entities/variant.entity';
       CartItem,
       Product,
       CustomizeUpload,
+      CustomizePrint,
       Variant,
     ]), // Make these entities available
   ],

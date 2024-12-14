@@ -59,7 +59,7 @@ export class OrdersController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @Patch(':id')
   public async update(
     @Param('id') id: string,
@@ -74,7 +74,8 @@ export class OrdersController {
     });
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
   @Delete(':id')
   public async remove(@Param('id') id: string, @Req() { user }) {
     const order = await this.ordersService.findOne(+id);

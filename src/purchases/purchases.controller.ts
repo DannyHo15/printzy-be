@@ -94,7 +94,8 @@ export class PurchasesController {
     });
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
   @Delete(':id')
   public async remove(@Param('id') id: string, @Req() { user }) {
     const purchase = await this.purchasesService.findOne(+id);

@@ -93,18 +93,6 @@ export class User {
   })
   carts: Cart[];
 
-  // @OneToMany(() => Address, (address) => address.user, {
-  //   onDelete: 'CASCADE',
-  //   onUpdate: 'CASCADE',
-  // })
-  // @ApiProperty({
-  //   type: () => [Address],
-  //   description: 'The addresses associated with the user',
-  //   required: false,
-  // })
-  // addresses: Address[];
-
-  // Add OneToMany relationship with Wishlist
   @OneToMany(() => Wishlist, (wishlist) => wishlist.user, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
@@ -127,6 +115,9 @@ export class User {
     example: 'John Doe',
     required: false,
   })
+  @Column('boolean', { default: true })
+  isActive: boolean;
+
   get fullName(): string {
     const firstName = this.firstName || '';
     const lastName = this.lastName || '';

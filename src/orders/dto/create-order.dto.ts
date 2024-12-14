@@ -1,13 +1,5 @@
-import { OrderStatus } from '@app/utils/types/order';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsInt,
-  Min,
-  IsEnum,
-  IsArray,
-} from 'class-validator';
+import { IsNotEmpty, IsOptional, IsInt, Min, IsArray } from 'class-validator';
 
 export class CreateOrderItemDto {
   @ApiProperty({
@@ -39,6 +31,13 @@ export class CreateOrderItemDto {
   })
   @IsNotEmpty()
   customizeUploadId: number;
+
+  @ApiProperty({
+    description: 'ID of the customize print Id',
+    example: 1,
+  })
+  @IsNotEmpty()
+  customizePrintId: number;
 }
 
 export class CreateOrderDto {

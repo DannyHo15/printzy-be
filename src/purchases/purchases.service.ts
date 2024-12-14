@@ -1,6 +1,6 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { Brackets, FindManyOptions, Like, Repository } from 'typeorm';
 
 import mapQueryToFindOptions from '@utils/map-query-to-find-options';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
@@ -43,7 +43,16 @@ export class PurchasesService {
   }
 
   public async findAll(query: FindPurchaseDto) {
-    const findOptions = mapQueryToFindOptions(query);
+    const { keyword, ...otherQuery } = query;
+    const findOptions = mapQueryToFindOptions(otherQuery);
+
+    // Adding keyword filter
+    if (query.keyword) {
+      findOptions.where = [
+        { transactionId: Like(`%${query.keyword}%`) }, // Search in transactionId
+        { order: { orderNumber: Like(`%${query.keyword}%`) } }, // Search in order number (if applicable)
+      ];
+    }
 
     const [data, total] = await this.purchasesRepository.findAndCount({
       ...findOptions,

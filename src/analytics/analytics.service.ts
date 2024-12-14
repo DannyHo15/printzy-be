@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FindTopProductDto } from './dto/find-top-product.dto';
 import { OrderItem } from '@app/orders/entities/orderItem.entity';
+import { Order } from '@app/orders/entities/order.entity';
 
 @Injectable()
 export class AnalyticsService {
   constructor(
     @InjectRepository(OrderItem)
     private readonly orderItemRepository: Repository<OrderItem>,
+    @InjectRepository(Order)
+    private orderRepository: Repository<Order>,
   ) {}
 
   async getTopProducts(dto: FindTopProductDto) {
@@ -151,5 +154,66 @@ export class AnalyticsService {
       totalProfit: Number(result.totalProfit),
       totalReviews: Number(result.totalReviews), // Thêm trường vào kết quả
     }));
+  }
+
+  async calculateTotalByDay(
+    findTopProductDto: FindTopProductDto,
+  ): Promise<any> {
+    const { startDate, endDate } = findTopProductDto;
+
+    // Validate dates (ensure they are in the correct format)
+    if (!startDate || !endDate) {
+      throw new Error('Both startDate and endDate are required.');
+    }
+
+    // Truy vấn các đơn hàng với trạng thái 'COMPLETED' trong phạm vi ngày cho trước
+    const query = this.orderRepository
+      .createQueryBuilder('order')
+      .select('DATE(order.createdAt)', 'date')
+      .addSelect('SUM(order.total)', 'total')
+      .addSelect(
+        'SUM((orderItem.unitPrice - variant.baseCost) * orderItem.quantity)',
+        'totalProfit',
+      ) // Tính tổng lợi nhuận
+      .innerJoin('order.orderItems', 'orderItem') // Join bảng orderItems để lấy thông tin sản phẩm
+      .innerJoin('orderItem.variant', 'variant') // Join bảng variant để lấy thông tin baseCost
+      .andWhere('order.createdAt >= :startDate', { startDate })
+      .andWhere('order.createdAt <= :endDate', { endDate })
+      .groupBy('DATE(order.createdAt)') // Nhóm theo ngày
+      .orderBy('date', 'ASC'); // Sắp xếp theo ngày tăng dần
+
+    // Lấy kết quả từ cơ sở dữ liệu
+    const result = await query.getRawMany();
+
+    // Tạo danh sách các ngày từ startDate đến endDate
+    const allDates = this.generateDates(startDate, endDate);
+
+    // Tạo một object để lưu trữ tổng theo ngày
+    const resultMap = allDates.map((date) => {
+      const existingData = result.find(
+        (item) => item.date.toISOString().split('T')[0] === date,
+      );
+      return {
+        date,
+        total: existingData ? parseFloat(existingData.total) : 0, // Nếu không có dữ liệu, gán giá trị 0
+        totalProfit: existingData ? parseFloat(existingData.totalProfit) : 0, // Nếu không có dữ liệu, gán giá trị 0
+      };
+    });
+
+    return resultMap;
+  }
+
+  // Hàm để tạo danh sách ngày từ startDate đến endDate
+  generateDates(startDate: Date, endDate: Date): string[] {
+    const dates = [];
+    const currentDate = new Date(startDate);
+    const lastDate = new Date(endDate);
+
+    while (currentDate <= lastDate) {
+      dates.push(currentDate.toISOString().split('T')[0]); // Chỉ lấy phần ngày
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dates;
   }
 }

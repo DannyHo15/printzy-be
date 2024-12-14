@@ -7,16 +7,22 @@ import {
   Patch,
   Delete,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { VariantsService } from './variant.service';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
+import { JWTGuard } from '@app/authentication/jwt.guard';
+import { RolesGuard } from '@app/utils/guards/roles.guard';
+import { Roles } from '@app/utils/decorators/role.decorator';
 
 @Controller('products/:productId/variants')
 export class VariantsController {
   constructor(private readonly variantsService: VariantsService) {}
 
   // Create a new variant
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
   @Post()
   async create(
     @Param('productId') productId: number,
@@ -53,6 +59,8 @@ export class VariantsController {
   }
 
   // Update a variant by its ID
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
   @Patch(':id')
   async update(
     @Param('productId') productId: number,
@@ -70,6 +78,8 @@ export class VariantsController {
   }
 
   // Delete a variant by its ID
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
   @Delete(':id')
   async remove(@Param('productId') productId: number, @Param('id') id: number) {
     const variant = await this.variantsService.findOne(id);

@@ -35,14 +35,14 @@ export class ClientsController {
     return this.clientsService.create(createClientDto);
   }
 
-  @UseGuards(JWTGuard)
-  @Roles('admin', 'client')
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
   @Get()
   public async findAll(@Query() query: FindClientDto, @Req() { user }) {
     return this.clientsService.findAll(query);
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard, RolesGuard)
   @Get(':id')
   public async findOne(@Param('id') id: string, @Req() { user }) {
     const client = await this.clientsService.findOne(+id);
@@ -74,7 +74,8 @@ export class ClientsController {
     });
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
   @Delete(':id')
   public async remove(@Param('id') id: string, @Req() { user }) {
     const client = await this.clientsService.findOne(+id);

@@ -17,6 +17,7 @@ import {
   PurchaseStatus,
 } from '@app/purchases/entities/purchase.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
+import { CustomizePrint } from '@app/customize-uploads/entities/customize-print.entity';
 
 @Injectable()
 export class OrdersService {
@@ -30,6 +31,8 @@ export class OrdersService {
     @InjectRepository(Variant) private variantsRepository: Repository<Variant>,
     @InjectRepository(CustomizeUpload)
     private customizesUploadRepository: Repository<CustomizeUpload>,
+    @InjectRepository(CustomizePrint)
+    private customizesPrintsRepository: Repository<CustomizePrint>,
     @InjectRepository(Purchase)
     private purchasesRepository: Repository<Purchase>,
   ) {}
@@ -91,12 +94,17 @@ export class OrdersService {
         where: { id: itemDto.customizeUploadId },
       });
 
+      const customizePrint = await this.customizesPrintsRepository.findOne({
+        where: { id: itemDto.customizePrintId },
+      });
+
       const orderItem = this.orderItemsRepository.create({
         order,
         variant,
         quantity: itemDto.quantity,
         unitPrice: itemDto.unitPrice,
         customizeUpload: itemDto.customizeUploadId ? customizeUpload : null,
+        customizePrint: itemDto.customizePrintId ? customizePrint : null,
       });
 
       orderItems.push(orderItem);
@@ -147,6 +155,7 @@ export class OrdersService {
         'orderItems.variant.product',
         'orderItems.variant.upload',
         'orderItems.customizeUpload',
+        'orderItems.customizePrint',
       ],
     } as FindManyOptions<Order>);
 

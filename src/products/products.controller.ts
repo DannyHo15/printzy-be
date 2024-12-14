@@ -25,7 +25,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @Post()
   public async create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
@@ -52,7 +52,7 @@ export class ProductsController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @Patch(':id')
   public async update(
     @Param('id') id: string,
@@ -62,7 +62,7 @@ export class ProductsController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @Delete(':id')
   public async remove(@Param('id') id: string) {
     return this.productsService.remove(+id);

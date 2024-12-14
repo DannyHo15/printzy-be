@@ -56,9 +56,6 @@ export class Order {
   @JoinColumn()
   payment: Payment;
 
-  @OneToMany(() => Variant, (variant) => variant.order)
-  variants: Variant[];
-
   @CreateDateColumn()
   createdAt: Date;
 

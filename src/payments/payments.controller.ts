@@ -9,7 +9,6 @@ import {
   UseGuards,
   Req,
   Query,
-  ForbiddenException,
 } from '@nestjs/common';
 
 import { JWTGuard } from '@authentication/jwt.guard';
@@ -19,7 +18,6 @@ import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { FindPaymentDto } from './dto/find-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { VnpayService } from './vnpay.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateVnpayPaymentUrlDTO } from './dto/create-vnpay-payment-url.dto';
 
@@ -60,7 +58,7 @@ export class PaymentsController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('client')
+  @Roles('admin')
   @Patch(':id')
   public async update(
     @Param('id') id: string,
@@ -73,7 +71,8 @@ export class PaymentsController {
     });
   }
 
-  @UseGuards(JWTGuard)
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin')
   @Delete(':id')
   public async remove(@Param('id') id: string) {
     const payment = await this.paymentsService.findOne(+id);

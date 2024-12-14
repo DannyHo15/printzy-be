@@ -6,7 +6,7 @@ import { CartItem } from './entities/cart-item.entity';
 import { Product } from 'src/products/entities/product.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
-import { warn } from 'console';
+import { CustomizePrint } from '@app/customize-uploads/entities/customize-print.entity';
 
 @Injectable()
 export class CartService {
@@ -19,8 +19,10 @@ export class CartService {
     private productRepository: Repository<Product>,
     @InjectRepository(CustomizeUpload)
     private customizeUploadRepository: Repository<CustomizeUpload>,
+    @InjectRepository(CustomizePrint)
+    private customizePrintRepository: Repository<CustomizePrint>,
     @InjectRepository(Variant)
-    private variantRepository: Repository<Variant>, // Inject Variant repository
+    private variantRepository: Repository<Variant>,
   ) {}
 
   async getCartByUser(userId: number): Promise<Cart> {
@@ -29,6 +31,7 @@ export class CartService {
       relations: [
         'cartItems',
         'cartItems.customizeUpload',
+        'cartItems.customizePrint',
         'cartItems.product',
         'cartItems.variant.upload',
         'cartItems.variant.variantOptionValues.optionValue',
@@ -48,6 +51,7 @@ export class CartService {
     productId: number,
     quantity: number,
     customizeUploadId?: number,
+    customizePrintId?: number,
     variantId?: number, // Add variantId as an optional parameter
   ): Promise<Cart> {
     const cart = await this.getCartByUser(userId);
@@ -87,11 +91,18 @@ export class CartService {
           })
         : null;
 
+      const customizePrint = customizePrintId
+        ? await this.customizePrintRepository.findOne({
+            where: { id: customizePrintId },
+          })
+        : null;
+
       const cartItem = this.cartItemRepository.create({
         product,
         cart,
         quantity,
         customizeUpload,
+        customizePrint,
         variant,
       });
 
@@ -106,7 +117,8 @@ export class CartService {
         'cartItems.product',
         'cartItems.variant',
         'cartItems.variant.variantOptionValues.optionValue',
-        'cartItems.customizeUpload', // Add customizeUpload to the relations
+        'cartItems.customizeUpload',
+        'cartItems.customizePrint',
       ],
     });
   }

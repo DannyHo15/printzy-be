@@ -197,10 +197,12 @@ export class ProductsService {
     const updatedProduct = await this.productsRepository.save({
       id,
       ...updateProductDto,
-      collection,
+      collection: collection ? collection : product.collection,
     });
 
-    await this.updateCategories(updateProductDto.categoryIds, updatedProduct);
+    if (updateProductDto.categoryIds) {
+      await this.updateCategories(updateProductDto.categoryIds, updatedProduct);
+    }
 
     return updatedProduct;
   }

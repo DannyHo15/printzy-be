@@ -25,7 +25,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @Post()
   public async create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
@@ -42,7 +42,7 @@ export class CategoriesController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @Patch(':id')
   public async update(
     @Param('id') id: string,

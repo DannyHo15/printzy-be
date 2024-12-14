@@ -18,6 +18,10 @@ export class FindPurchaseDto {
 
   @ApiProperty()
   @IsOptional()
+  keyword?: string;
+
+  @ApiProperty()
+  @IsOptional()
   productId?: number;
 
   @ApiProperty()

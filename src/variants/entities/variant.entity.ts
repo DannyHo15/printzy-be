@@ -52,12 +52,6 @@ export class Variant {
   )
   variantOptionValues: VariantOptionValue[];
 
-  @ManyToOne(() => Order, (order) => order.variants, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  order: Order;
-
   @ManyToMany(() => OrderItem, (orderItem) => orderItem.variant)
   orderItems: OrderItem[];
 
