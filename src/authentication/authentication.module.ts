@@ -11,10 +11,12 @@ import { RefreshTokensRepository } from './refresh-tokens.repository';
 import { TokensService } from './tokens.service';
 import { JwtStrategy } from './jwt.strategy';
 import { ClientsModule } from 'src/clients/clients.module';
+import { AuthService } from './authentication.service';
+import { User } from '@app/users/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RefreshToken]),
+    TypeOrmModule.forFeature([RefreshToken, User]),
     forwardRef(() => ClientsModule),
     PassportModule.register({}),
     JwtModule.register({
@@ -26,6 +28,6 @@ import { ClientsModule } from 'src/clients/clients.module';
     UsersModule,
   ],
   controllers: [AuthenticationController],
-  providers: [RefreshTokensRepository, JwtStrategy, TokensService],
+  providers: [RefreshTokensRepository, JwtStrategy, TokensService, AuthService],
 })
 export class AuthenticationModule {}

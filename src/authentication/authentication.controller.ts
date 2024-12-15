@@ -1,4 +1,11 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 
 import { UsersService } from '@users/users.service';
 import { User } from '@users/entities/user.entity';
@@ -6,6 +13,9 @@ import { WEEK_MS } from '@utils/variables';
 import { AuthenticationDto } from './dto/authentication.dto';
 import { TokensService } from './tokens.service';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthService } from './authentication.service';
+import { JWTGuard } from './jwt.guard';
+import { JwtStrategy } from './jwt.strategy';
 
 interface ITokenRequest {
   refreshToken: string;
@@ -20,7 +30,9 @@ export class AuthenticationController {
   constructor(
     private readonly tokensService: TokensService,
     private readonly usersService: UsersService,
+    private readonly authService: AuthService,
   ) {}
+
   @Post()
   public async create(@Body() { email, password }: AuthenticationDto) {
     const [user] = (
@@ -79,6 +91,32 @@ export class AuthenticationController {
     return {
       status: token.isRevoked ? 'success' : 'fail',
     };
+  }
+
+  @Post('send-reset-password-email')
+  async sendResetPasswordEmail(@Body() body: { email: string }): Promise<void> {
+    const [user] = (
+      await this.usersService.findAll({
+        $limit: 1,
+        email: {
+          $eq: body.email,
+        },
+      })
+    ).data;
+
+    if (!user) {
+      throw new BadRequestException('Invalid email');
+    }
+    return await this.authService.sendResetPasswordEmail(user);
+  }
+
+  @UseGuards(JWTGuard)
+  @Post('reset-password')
+  async resetPassword(
+    @Req() { user },
+    @Body() body: { token: string; newPassword: string },
+  ) {
+    return await this.authService.resetPassword(user.id, body.newPassword);
   }
 
   private buildResponsePayload(
