@@ -98,6 +98,7 @@ export class VNPayService {
     }
 
     await this.purchaseRepository.save(purchase);
+    await this.orderRepository.save(order);
 
     // Trả về kết quả
     return {

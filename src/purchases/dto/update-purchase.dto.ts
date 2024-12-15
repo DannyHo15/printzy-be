@@ -5,6 +5,10 @@ import { IsIn, IsOptional } from 'class-validator';
 import { PurchaseStatus } from '../entities/purchase.entity';
 
 export class UpdatePurchaseDto extends PartialType(CreatePurchaseDto) {
+  @ApiProperty()
+  @IsOptional()
+  transactionId: string;
+
   @ApiProperty({
     enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
     nullable: true,

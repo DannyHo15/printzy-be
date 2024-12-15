@@ -9,6 +9,7 @@ import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 import { Purchase } from './entities/purchase.entity';
 import { Product } from '@products/entities/product.entity';
 import { Order } from '@app/orders/entities/order.entity';
+import { OrderStatus } from '@app/utils/types/order';
 
 @Injectable()
 export class PurchasesService {
@@ -94,11 +95,19 @@ export class PurchasesService {
   public async update(id: number, updatePurchaseDto: UpdatePurchaseDto) {
     const purchase = await this.purchasesRepository.findOne({
       where: { id },
+      relations: ['order'],
     });
 
     if (!purchase) {
       throw new UnprocessableEntityException('Purchase not found');
     }
+    const order = await this.ordersRepository.findOne({
+      where: { id: purchase.order.id },
+    });
+
+    order.status = OrderStatus.PROCESSING;
+
+    await this.ordersRepository.save(order);
 
     const updatedPurchase = await this.purchasesRepository.save({
       id,
