@@ -15,6 +15,7 @@ import { UpdateVariantDto } from './dto/update-variant.dto';
 import { JWTGuard } from '@app/authentication/jwt.guard';
 import { RolesGuard } from '@app/utils/guards/roles.guard';
 import { Roles } from '@app/utils/decorators/role.decorator';
+import { CreateCustomizeModelDto } from './dto/create-customize-model.dto';
 
 @Controller('products/:productId/variants')
 export class VariantsController {
@@ -90,5 +91,16 @@ export class VariantsController {
     }
     await this.variantsService.remove(id);
     return { message: `Variant with ID ${id} deleted successfully.` };
+  }
+
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
+  @Post('create-customize-model')
+  async createCustomizeModel(
+    @Body() createCustomizeModelDto: CreateCustomizeModelDto,
+  ) {
+    return await this.variantsService.createCustomizeModel(
+      createCustomizeModelDto,
+    );
   }
 }

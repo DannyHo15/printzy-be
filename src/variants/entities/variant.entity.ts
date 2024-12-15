@@ -13,6 +13,7 @@ import { Product } from '@app/products/entities/product.entity';
 import { Upload } from '@app/uploads/entities/upload.entity';
 import { Order } from '@app/orders/entities/order.entity';
 import { OrderItem } from '@app/orders/entities/orderItem.entity';
+import { CustomizeModel } from './customizeModel.entity';
 
 @Entity({ name: 'variants' })
 export class Variant {
@@ -62,6 +63,14 @@ export class Variant {
   @JoinColumn()
   upload: Upload;
 
-  @Column('json', { nullable: true })
-  customizeModel: any;
+  @ManyToOne(
+    () => CustomizeModel,
+    (customizeModel) => customizeModel.variants,
+    {
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn()
+  customizeModel: CustomizeModel;
 }

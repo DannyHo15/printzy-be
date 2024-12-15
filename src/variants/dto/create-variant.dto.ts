@@ -52,10 +52,10 @@ export class CreateVariantDto {
   @Type(() => VariantOptionValueDto)
   optionValues: VariantOptionValueDto[];
 
-  @ApiProperty({ required: false, type: Object, default: null })
+  @ApiProperty({ required: false, type: Number, default: null })
   @IsOptional()
-  @IsObject()
-  customizeModel?: Record<string, any>;
+  @IsNumber()
+  customizeModelId?: number;
 }
 
 export class VariantOptionValueDto {

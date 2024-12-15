@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsPositive } from 'class-validator';
+import { IsEmpty, IsInt, IsOptional, IsPositive } from 'class-validator';
 
 export class AddToCartDto {
   @ApiProperty()
@@ -15,9 +15,10 @@ export class AddToCartDto {
   @IsInt()
   customizeUploadId: number;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
   @IsInt()
-  customizePrintId: number;
+  @IsOptional()
+  customizePrintId: number | null;
 
   @ApiProperty()
   @IsInt()

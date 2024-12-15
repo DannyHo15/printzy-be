@@ -6,6 +6,8 @@ import { VariantOptionValue } from './entities/variant-option-value.entity';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto'; // Create this DTO for updating
 import { Upload } from '@app/uploads/entities/upload.entity';
+import { CustomizeModel } from './entities/customizeModel.entity';
+import { CreateCustomizeModelDto } from './dto/create-customize-model.dto';
 
 @Injectable()
 export class VariantsService {
@@ -16,6 +18,8 @@ export class VariantsService {
     private readonly variantOptionValueRepository: Repository<VariantOptionValue>,
     @InjectRepository(Upload)
     private readonly uploadRepository: Repository<Upload>,
+    @InjectRepository(CustomizeModel)
+    private readonly customizeModel: Repository<CustomizeModel>,
   ) {}
 
   async create(
@@ -23,6 +27,7 @@ export class VariantsService {
     productId: number,
   ): Promise<Variant> {
     let upload = null;
+    let customizeModel = null;
     if (createVariantDto.uploadId) {
       upload = await this.uploadRepository.findOne({
         where: { id: createVariantDto.uploadId },
@@ -34,6 +39,18 @@ export class VariantsService {
       }
     }
 
+    if (createVariantDto.customizeModelId) {
+      customizeModel = await this.customizeModel.findOne({
+        where: { id: createVariantDto.customizeModelId },
+      });
+      if (!customizeModel) {
+        throw new NotFoundException(
+          `Customize
+          Model with ID ${createVariantDto.customizeModelId} not found`,
+        );
+      }
+    }
+
     const variant = this.variantRepository.create({
       price: createVariantDto.price,
       baseCost: createVariantDto.baseCost,
@@ -41,7 +58,7 @@ export class VariantsService {
       sku: createVariantDto.sku,
       isAvailable: createVariantDto.isAvailable,
       isInStock: createVariantDto.isInStock,
-      customizeModel: createVariantDto.customizeModel,
+      customizeModel,
       upload,
     });
 
@@ -77,7 +94,7 @@ export class VariantsService {
     const whereCondition = productId ? { product: { id: productId } } : {};
     return this.variantRepository.find({
       where: whereCondition,
-      relations: ['variantOptionValues', 'upload', 'product'],
+      relations: ['variantOptionValues', 'upload', 'product', 'customizeModel'],
     });
   }
 
@@ -108,7 +125,6 @@ export class VariantsService {
     variant.sku = updateVariantDto.sku;
     variant.isAvailable = updateVariantDto.isAvailable;
     variant.isInStock = updateVariantDto.isInStock;
-    variant.customizeModel = updateVariantDto.customizeModel;
     variant.upload = upload;
     await this.variantRepository.save(variant);
 
@@ -135,5 +151,12 @@ export class VariantsService {
     }
 
     await this.variantRepository.remove(variant);
+  }
+
+  async createCustomizeModel(createCustomizeModelDto: CreateCustomizeModelDto) {
+    const customizeModel = this.customizeModel.create({
+      data: createCustomizeModelDto.customizeModel,
+    });
+    return this.customizeModel.save(customizeModel);
   }
 }
