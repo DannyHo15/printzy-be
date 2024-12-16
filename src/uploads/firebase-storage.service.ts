@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class FirebaseStorageService {
   constructor() {
-    const serviceAccount = require('../../firebase/poised-shift-422808-d9-firebase-adminsdk-7mpf9-c4f74dfffc.json');
+    const serviceAccount = require('../firebase/poised-shift-422808-d9-firebase-adminsdk-7mpf9-c4f74dfffc.json');
     if (!admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
