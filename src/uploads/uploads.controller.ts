@@ -26,13 +26,47 @@ export class UploadsController {
   ) {}
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @UseInterceptors(FileInterceptor('file'))
   @Post()
   public async create(@UploadedFile('file') file) {
     const fileUrl = await this.firebaseStorageService.uploadFile(file);
 
     return this.uploadsService.create({
+      originalName: file.originalname,
+      fileName: file.originalname,
+      path: fileUrl,
+      internalPath: fileUrl,
+      size: String(file.size),
+      mimetype: file.mimetype,
+    });
+  }
+
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('variant-mockup')
+  public async createVariantMockup(@UploadedFile('file') file) {
+    const fileUrl = await this.firebaseStorageService.uploadFile(file);
+
+    return this.uploadsService.createVariantMockup({
+      originalName: file.originalname,
+      fileName: file.originalname,
+      path: fileUrl,
+      internalPath: fileUrl,
+      size: String(file.size),
+      mimetype: file.mimetype,
+    });
+  }
+
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('admin', 'employee')
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('variant-design')
+  public async createVariantDesign(@UploadedFile('file') file) {
+    const fileUrl = await this.firebaseStorageService.uploadFile(file);
+
+    return this.uploadsService.createVariantDesign({
       originalName: file.originalname,
       fileName: file.originalname,
       path: fileUrl,
@@ -53,7 +87,7 @@ export class UploadsController {
   }
 
   @UseGuards(JWTGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'employee')
   @Delete(':id')
   public async remove(@Param('id') id: string) {
     const upload = await this.findOne(id);

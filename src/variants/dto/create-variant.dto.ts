@@ -47,15 +47,20 @@ export class CreateVariantDto {
   uploadId?: number;
 
   @ApiProperty()
+  @IsOptional()
+  @IsInt()
+  variantMockupId?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsInt()
+  variantDesignId?: number;
+
+  @ApiProperty()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VariantOptionValueDto)
   optionValues: VariantOptionValueDto[];
-
-  @ApiProperty({ required: false, type: Number, default: null })
-  @IsOptional()
-  @IsNumber()
-  customizeModelId?: number;
 }
 
 export class VariantOptionValueDto {

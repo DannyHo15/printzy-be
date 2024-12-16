@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import helmet from 'helmet';
+import * as bodyParser from 'body-parser';
 
 import { AppModule } from '@app/app.module';
 
@@ -13,7 +14,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-
+  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   app.enableCors();
   app.enableVersioning({
     type: VersioningType.URI,

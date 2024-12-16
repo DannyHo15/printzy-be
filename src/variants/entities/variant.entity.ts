@@ -11,9 +11,9 @@ import {
 import { VariantOptionValue } from './variant-option-value.entity';
 import { Product } from '@app/products/entities/product.entity';
 import { Upload } from '@app/uploads/entities/upload.entity';
-import { Order } from '@app/orders/entities/order.entity';
 import { OrderItem } from '@app/orders/entities/orderItem.entity';
-import { CustomizeModel } from './customizeModel.entity';
+import { VariantMockup } from '@app/uploads/entities/variant-mockup.entity';
+import { VariantDesign } from '@app/uploads/entities/variant-design.entity';
 
 @Entity({ name: 'variants' })
 export class Variant {
@@ -63,14 +63,17 @@ export class Variant {
   @JoinColumn()
   upload: Upload;
 
-  @ManyToOne(
-    () => CustomizeModel,
-    (customizeModel) => customizeModel.variants,
-    {
-      onDelete: 'SET NULL',
-      onUpdate: 'CASCADE',
-    },
-  )
+  @OneToOne(() => VariantMockup, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn()
-  customizeModel: CustomizeModel;
+  variantMockup: VariantMockup;
+
+  @ManyToOne(() => VariantDesign, (variantDesign) => variantDesign.variants, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  variantDesign: VariantDesign;
 }

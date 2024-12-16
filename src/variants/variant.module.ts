@@ -8,15 +8,17 @@ import { VariantOptionValue } from './entities/variant-option-value.entity';
 import { Upload } from '@app/uploads/entities/upload.entity';
 import { CartItem } from '@app/carts/entities/cart-item.entity';
 import { OrderItem } from '@app/orders/entities/orderItem.entity';
-import { CustomizeModel } from './entities/customizeModel.entity';
+import { VariantMockup } from '@app/uploads/entities/variant-mockup.entity';
+import { VariantDesign } from '@app/uploads/entities/variant-design.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Variant,
-      CustomizeModel,
       VariantOptionValue,
       Upload,
+      VariantMockup,
+      VariantDesign,
       CartItem,
       OrderItem,
     ]),

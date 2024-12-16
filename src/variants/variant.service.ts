@@ -4,10 +4,10 @@ import { Repository } from 'typeorm';
 import { Variant } from './entities/variant.entity';
 import { VariantOptionValue } from './entities/variant-option-value.entity';
 import { CreateVariantDto } from './dto/create-variant.dto';
-import { UpdateVariantDto } from './dto/update-variant.dto'; // Create this DTO for updating
+import { UpdateVariantDto } from './dto/update-variant.dto';
 import { Upload } from '@app/uploads/entities/upload.entity';
-import { CustomizeModel } from './entities/customizeModel.entity';
-import { CreateCustomizeModelDto } from './dto/create-customize-model.dto';
+import { VariantMockup } from '@app/uploads/entities/variant-mockup.entity';
+import { VariantDesign } from '@app/uploads/entities/variant-design.entity';
 
 @Injectable()
 export class VariantsService {
@@ -18,8 +18,10 @@ export class VariantsService {
     private readonly variantOptionValueRepository: Repository<VariantOptionValue>,
     @InjectRepository(Upload)
     private readonly uploadRepository: Repository<Upload>,
-    @InjectRepository(CustomizeModel)
-    private readonly customizeModel: Repository<CustomizeModel>,
+    @InjectRepository(VariantMockup)
+    private readonly variantMockupRepository: Repository<VariantMockup>,
+    @InjectRepository(VariantDesign)
+    private readonly variantDesignRepository: Repository<VariantDesign>,
   ) {}
 
   async create(
@@ -27,7 +29,8 @@ export class VariantsService {
     productId: number,
   ): Promise<Variant> {
     let upload = null;
-    let customizeModel = null;
+    let variantDesign = null;
+    let variantMockup = null;
     if (createVariantDto.uploadId) {
       upload = await this.uploadRepository.findOne({
         where: { id: createVariantDto.uploadId },
@@ -39,14 +42,24 @@ export class VariantsService {
       }
     }
 
-    if (createVariantDto.customizeModelId) {
-      customizeModel = await this.customizeModel.findOne({
-        where: { id: createVariantDto.customizeModelId },
+    if (createVariantDto.variantMockupId) {
+      variantMockup = await this.variantMockupRepository.findOne({
+        where: { id: createVariantDto.variantMockupId },
       });
-      if (!customizeModel) {
+      if (!upload) {
         throw new NotFoundException(
-          `Customize
-          Model with ID ${createVariantDto.customizeModelId} not found`,
+          `Variant Mockup with ID ${createVariantDto.variantMockupId} not found`,
+        );
+      }
+    }
+
+    if (createVariantDto.variantDesignId) {
+      variantDesign = await this.variantDesignRepository.findOne({
+        where: { id: createVariantDto.variantDesignId },
+      });
+      if (!upload) {
+        throw new NotFoundException(
+          `Variant Design with ID ${createVariantDto.variantDesignId} not found`,
         );
       }
     }
@@ -58,8 +71,9 @@ export class VariantsService {
       sku: createVariantDto.sku,
       isAvailable: createVariantDto.isAvailable,
       isInStock: createVariantDto.isInStock,
-      customizeModel,
       upload,
+      variantMockup,
+      variantDesign,
     });
 
     await this.variantRepository.save(variant);
@@ -75,11 +89,10 @@ export class VariantsService {
     return variant;
   }
 
-  // Get a variant by ID, including its option values and upload
   async findOne(id: number): Promise<Variant> {
     const variant = await this.variantRepository.findOne({
       where: { id },
-      relations: ['variantOptionValues', 'upload', 'product'],
+      relations: ['variantOptionValues', 'upload', 'product', 'variantDesign'],
     });
 
     if (!variant) {
@@ -89,16 +102,20 @@ export class VariantsService {
     return variant;
   }
 
-  // Get all variants, optionally filter by productId
   async findAll(productId?: number): Promise<Variant[]> {
     const whereCondition = productId ? { product: { id: productId } } : {};
     return this.variantRepository.find({
       where: whereCondition,
-      relations: ['variantOptionValues', 'upload', 'product', 'customizeModel'],
+      relations: [
+        'variantOptionValues',
+        'upload',
+        'product',
+        'variantDesign',
+        'variantMockup',
+      ],
     });
   }
 
-  // Update an existing variant and its option values
   async update(
     id: number,
     updateVariantDto: UpdateVariantDto,
@@ -108,38 +125,11 @@ export class VariantsService {
       throw new NotFoundException(`Variant with ID ${id} not found`);
     }
 
-    let upload = variant.upload;
-    if (updateVariantDto.uploadId) {
-      upload = await this.uploadRepository.findOne({
-        where: { id: updateVariantDto.uploadId },
-      });
-      if (!upload) {
-        throw new NotFoundException(
-          `Upload with ID ${updateVariantDto.uploadId} not found`,
-        );
-      }
-    }
-
-    // Update the variant's basic details
     variant.price = updateVariantDto.price;
     variant.sku = updateVariantDto.sku;
     variant.isAvailable = updateVariantDto.isAvailable;
     variant.isInStock = updateVariantDto.isInStock;
-    variant.upload = upload;
     await this.variantRepository.save(variant);
-
-    // Update associated option values
-    // if (updateVariantDto.optionValues) {
-    //   await this.variantOptionValueRepository.delete({ variant: { id } });
-
-    //   for (const optionValueDto of updateVariantDto.optionValues) {
-    //     const variantOptionValue = this.variantOptionValueRepository.create({
-    //       variant,
-    //       optionValue: { id: optionValueDto.valueId },
-    //     });
-    //     await this.variantOptionValueRepository.save(variantOptionValue);
-    //   }
-    // }
 
     return variant;
   }
@@ -151,12 +141,5 @@ export class VariantsService {
     }
 
     await this.variantRepository.remove(variant);
-  }
-
-  async createCustomizeModel(createCustomizeModelDto: CreateCustomizeModelDto) {
-    const customizeModel = this.customizeModel.create({
-      data: createCustomizeModelDto.customizeModel,
-    });
-    return this.customizeModel.save(customizeModel);
   }
 }

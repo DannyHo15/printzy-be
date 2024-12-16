@@ -6,15 +6,33 @@ import mapQueryToFindOptions from '@utils/map-query-to-find-options';
 import { CreateUploadDto } from './dto/create-upload.dto';
 import { FindUploadDto } from './dto/find-upload.dto';
 import { Upload } from './entities/upload.entity';
+import { VariantMockup } from './entities/variant-mockup.entity';
+import { VariantDesign } from './entities/variant-design.entity';
 
 @Injectable()
 export class UploadsService {
   constructor(
     @InjectRepository(Upload) private uploadsRepository: Repository<Upload>,
+    @InjectRepository(VariantMockup)
+    private variantMockupsRepository: Repository<VariantMockup>,
+    @InjectRepository(VariantDesign)
+    private variantDesignsRepository: Repository<VariantDesign>,
   ) {}
 
   public async create(createUploadDto: CreateUploadDto) {
     return this.uploadsRepository.save(createUploadDto);
+  }
+
+  public async createVariantMockup(createVariantMockupDto: CreateUploadDto) {
+    return this.variantMockupsRepository.save({
+      ...createVariantMockupDto,
+    });
+  }
+
+  public async createVariantDesign(createVariantMockupDto: CreateUploadDto) {
+    return this.variantDesignsRepository.save({
+      ...createVariantMockupDto,
+    });
   }
 
   public async findAll(query: FindUploadDto) {
