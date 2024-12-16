@@ -21,30 +21,21 @@
 #
 # CMD ["yarn", "start:prod"]
 #
-FROM node:20-alpine
+FROM node:alpine AS base
 
-# Set the working directory in the container
+FROM base AS build
+
 WORKDIR /app
-
-# # Install NestJS CLI globally using npm (optional, if you need it for your project)
-# RUN npm install -g @nestjs/cli
-
-# Copy package.json and package-lock.json to the container
-COPY package.json package-lock.json yarn.lock ./
-COPY  poised-shift-422808-d9-firebase-adminsdk-7mpf9-965a8b765c.json ./
-
-# Install dependencies using npm
-RUN yarn
-
-
-# Copy the remaining application files
+COPY package.json yarn.lock ./
+RUN yarn install --no-lockfile
 COPY . .
+RUN yarn build
 
+FROM base AS production
 
-USER node
-# Expose port 3020
-EXPOSE 3020
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/package.json .
+COPY --from=build /app/yarn.lock .
 
-# Start the application in development mode using npm
-CMD ["npm", "run", "start:dev"]
-
+CMD ["sh", "-c", "yarn start:prod"]
