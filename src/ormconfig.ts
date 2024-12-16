@@ -9,9 +9,9 @@ export const ormConfig: TypeOrmModuleOptions = {
   database: process.env.POSTGRES_DB,
   synchronize: true, //dont use in production
   autoLoadEntities: true,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  // ssl: {
+  //   rejectUnauthorized: false,
+  // },
 };
 // export const ormConfig: TypeOrmModuleOptions = {
 //   type: 'postgres',
