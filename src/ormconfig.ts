@@ -7,12 +7,11 @@ export const ormConfig: TypeOrmModuleOptions = {
   username: 'doadmin',
   password: 'AVNS_u8jUSGju8ri01Cn7NLH',
   database: 'printzy',
-  synchronize: true, //dont use in production
+  synchronize: false, //dont use in production
   autoLoadEntities: true,
-  // ssl: {
-  //   rejectUnauthorized: false,
-  // },
-  ssl: false,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 };
 // export const ormConfig: TypeOrmModuleOptions = {
 //   type: 'postgres',
