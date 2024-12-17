@@ -27,12 +27,15 @@ export class AddressesService {
     private districtsRepository: Repository<District>,
     @InjectRepository(Ward) private wardsRepository: Repository<Ward>,
     @InjectRepository(User) private usersRepository: Repository<User>,
-    @InjectRepository(Client) private clientRespository: Repository<Client>,
+    @InjectRepository(Client) private clientRepository: Repository<Client>,
   ) {}
 
   public async create(createAddressDto: CreateAddressDto) {
-    const [_, count] = await this.addressesRepository.findAndCount();
-    const client = await this.clientRespository.findOne({
+    const [_, count] = await this.addressesRepository.findAndCount({
+      where: { client: { id: createAddressDto.clientId } },
+    });
+
+    const client = await this.clientRepository.findOne({
       where: { id: createAddressDto.clientId },
     });
 

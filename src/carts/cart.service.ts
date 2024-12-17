@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cart } from './entities/cart.entity';
 import { CartItem } from './entities/cart-item.entity';
-import { Product } from 'src/products/entities/product.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
 import { CustomizePrint } from '@app/customize-uploads/entities/customize-print.entity';
+import { Product } from '@app/products/entities/product.entity';
 
 @Injectable()
 export class CartService {

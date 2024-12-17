@@ -2,8 +2,30 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": ".*\\.(spec|test)\\.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  }
+  },
+  "moduleNameMapper": {
+    "^@app/(.*)$": "<rootDir>/src/$1",
+    "^@addresses(.*)$": "<rootDir>/src/addresses/$1",
+    "^@authentication(.*)$": "<rootDir>/src/authentication/$1",
+    "^@categories(.*)$": "<rootDir>/src/categories/$1",
+    "^@clients(.*)$": "<rootDir>/src/clients/$1",
+    "^@orders(.*)$": "<rootDir>/src/orders/$1",
+    "^@payments(.*)$": "<rootDir>/src/payments/$1",
+    "^@photos(.*)$": "<rootDir>/src/photos/$1",
+    "^@products(.*)$": "<rootDir>/src/products/$1",
+    "^@purchases(.*)$": "<rootDir>/src/purchases/$1",
+    "^@uploads(.*)$": "<rootDir>/src/uploads/$1",
+    "^@users(.*)$": "<rootDir>/src/users/$1",
+    "^@utils(.*)$": "<rootDir>/src/utils/$1",
+    "^@province/(.*)$": "<rootDir>/src/province/$1",
+    "^@district/(.*)$": "<rootDir>/src/district/$1",
+    "^@ward/(.*)$": "<rootDir>/src/ward/$1",
+    "^@charts(.*)$": "<rootDir>/src/charts/$1"
+  },
+  "coverageDirectory": "./coverage",
+  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "coveragePathIgnorePatterns": ["/node_modules/", ".module.ts$", ".spec.ts$"]
 }

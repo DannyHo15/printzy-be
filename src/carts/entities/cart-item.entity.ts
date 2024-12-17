@@ -7,12 +7,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from 'src/products/entities/product.entity';
 import { Cart } from './cart.entity';
 import { CustomizeUpload } from '@app/customize-uploads/entities/customize-upload.entity';
 import { Variant } from '@app/variants/entities/variant.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { CustomizePrint } from '@app/customize-uploads/entities/customize-print.entity';
+import { Product } from '@app/products/entities/product.entity';
 
 @Entity({ name: 'cart_items' })
 export class CartItem {

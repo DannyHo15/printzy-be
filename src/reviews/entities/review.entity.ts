@@ -1,3 +1,5 @@
+import { Product } from '@app/products/entities/product.entity';
+import { User } from '@app/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,8 +8,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from 'src/users/entities/user.entity'; // Adjust the path as necessary
-import { Product } from 'src/products/entities/product.entity'; // Adjust the path as necessary
 
 @Entity({ name: 'user_reviews' })
 export class UserReview {

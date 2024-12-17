@@ -62,21 +62,40 @@
     "typeorm": "^0.3.20"
   },
   "jest": {
+    "rootDir": "src",
     "moduleFileExtensions": [
       "js",
       "json",
       "ts"
     ],
-    "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@app/(.*)$": "<rootDir>/$1",
+      "^@addresses(.*)$": "<rootDir>/addresses/$1",
+      "^@authentication(.*)$": "<rootDir>/authentication/$1",
+      "^@categories(.*)$": "<rootDir>/categories/$1",
+      "^@clients(.*)$": "<rootDir>/clients/$1",
+      "^@orders(.*)$": "<rootDir>/orders/$1",
+      "^@payments(.*)$": "<rootDir>/payments/$1",
+      "^@photos(.*)$": "<rootDir>/photos/$1",
+      "^@products(.*)$": "<rootDir>/products/$1",
+      "^@purchases(.*)$": "<rootDir>/purchases/$1",
+      "^@uploads(.*)$": "<rootDir>/uploads/$1",
+      "^@users(.*)$": "<rootDir>/users/$1",
+      "^@utils(.*)$": "<rootDir>/utils/$1",
+      "^@province/(.*)$": "<rootDir>/province/$1",
+      "^@district/(.*)$": "<rootDir>/district/$1",
+      "^@ward/(.*)$": "<rootDir>/ward/$1",
+      "^@charts(.*)$": "<rootDir>/charts/$1"
+    }
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.5",

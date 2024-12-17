@@ -1,3 +1,5 @@
+import { Product } from '@app/products/entities/product.entity';
+import { User } from '@app/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,8 +7,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Product } from 'src/products/entities/product.entity'; // Import Product
-import { User } from 'src/users/entities/user.entity'; // Import User
 
 @Entity({ name: 'wishlists' })
 export class Wishlist {
