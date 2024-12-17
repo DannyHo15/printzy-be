@@ -23,4 +23,6 @@ USER node
 EXPOSE 3020
 
 # Start the application in development mode using npm
+RUN npm run copy-files
 CMD ["npm", "run", "start:dev"]
+
