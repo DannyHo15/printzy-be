@@ -29,9 +29,11 @@ export class VnpayService {
       vnp_Locale: 'vn',
       vnp_OrderInfo: orderInfo,
       vnp_OrderType: 'billpayment',
-      vnp_ReturnUrl: this.vnp_ReturnUrl,
+      vnp_ReturnUrl: this.vnp_ReturnUrl ?? 'https://printzy.top/success',
       vnp_TxnRef: orderId,
     };
+
+    console.log(params);
 
     const sortedParams = Object.keys(params)
       .sort()
