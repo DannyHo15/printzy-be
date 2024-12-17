@@ -7,7 +7,7 @@ export class VnpayService {
   private readonly vnp_TmnCode = process.env.VNP_TMNCODE;
   private readonly vnp_HashSecret = process.env.VNP_HASHSECRET;
   private readonly vnp_Url = process.env.VNP_URL;
-  private readonly vnp_ReturnUrl = process.env.VNP_RETURNURL;
+  private readonly vnp_ReturnUrl = process.env.VNP_RETURN_URL;
 
   // Method to create VNPay payment URL
   createPaymentUrl(
