@@ -8,10 +8,11 @@ import {
 } from '@app/purchases/entities/purchase.entity';
 import { Order } from '@app/orders/entities/order.entity';
 import { OrderStatus } from '@app/utils/types/order';
-
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class VNPayService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(Purchase)
     private readonly purchaseRepository: Repository<Purchase>,
     @InjectRepository(Order)
@@ -33,7 +34,7 @@ export class VNPayService {
       )
       .join('&');
 
-    const secretKey = process.env.VNP_HASHSECRET;
+    const secretKey = this.configService.get<string>('VNP_HASHSECRET');
 
     const crypto = require('crypto');
     const hmac = crypto.createHmac('sha512', secretKey);

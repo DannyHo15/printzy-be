@@ -1,40 +1,49 @@
 version: '3.8'
 
 services:
-  node:
-    build:
-      context: ./
-      dockerfile: Dockerfile.dev
-    container_name: bonsay_api
-    restart: unless-stopped
+  # node:
+  #   build:
+  #     context: ./
+  #     dockerfile: Dockerfile.dev
+  #   container_name: bonsay_api
+  #   restart: unless-stopped
+  #   tty: true
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - 3020:3020
+  #   networks:
+  #     - bonsay
+  printzy-be:
+    image: ghcr.io/dannyho15/printzybe:latest
+    container_name: printzy-be
+    restart: always
     tty: true
-    env_file:
-      - .env
-    depends_on:
-      - db
-    volumes:
-      - .:/app
-      - /app/node_modules
-    ports:
-      - 3020:3020
     networks:
       - bonsay
-  db:
-    image: postgres:13-alpine
-    container_name: bonsay_db
     ports:
-      - 5436:5432
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      POSTGRES_PASSWORD: 'postgres'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_DB: 'bonsay'
-    volumes:
-      - data:/var/lib/postgresql/bonsay_data
-    networks:
-      - bonsay
+      - '3020:3020'
+  # db:
+  #   image: postgres:13-alpine
+  #   container_name: bonsay_db
+  #   ports:
+  #     - 5436:5432
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     POSTGRES_PASSWORD: 'postgres'
+  #     POSTGRES_USER: 'postgres'
+  #     POSTGRES_DB: 'bonsay'
+  #   volumes:
+  #     - data:/var/lib/postgresql/bonsay_data
+  #   networks:
+  #     - bonsay
 volumes:
   data:
     name: bonsay_data

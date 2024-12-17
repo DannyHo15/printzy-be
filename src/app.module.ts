@@ -37,8 +37,6 @@ import { VNPayModule } from './vn-pay/vn-pay.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      cache: true,
-      expandVariables: true,
     }),
     UsersModule,
     AuthenticationModule,
