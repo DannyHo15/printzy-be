@@ -6,7 +6,7 @@ import { jwtExpiresIn } from '@utils/variables';
 import { User } from '@users/entities/user.entity';
 import { UsersService } from '@users/users.service';
 import { ClientsService } from '@clients/clients.service';
-
+import { ConfigService } from '@nestjs/config';
 export interface AccessTokenPayload {
   sub: number;
 }
@@ -16,15 +16,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   public constructor(
     private users: UsersService,
     private clients: ClientsService,
+    private configService: ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: configService.get<string>('JWT_SECRET'),
       signOptions: {
         expiresIn: jwtExpiresIn,
       },
     });
+    console.log('jwt strategy', process.env.JWT_SECRET);
+    console.log('jwt strategy', configService.get<string>('JWT_SECRET'));
   }
 
   async validate(payload: AccessTokenPayload): Promise<User> {
