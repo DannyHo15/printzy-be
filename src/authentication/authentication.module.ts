@@ -20,7 +20,8 @@ import { User } from '@app/users/entities/user.entity';
     forwardRef(() => ClientsModule),
     PassportModule.register({}),
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret:
+        '86511525c07104986c3b9b90f3f3cd2d60f681175308f1c7554fae69d90a96299',
       signOptions: {
         expiresIn: jwtExpiresIn,
       },
