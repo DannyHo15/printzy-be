@@ -11,6 +11,7 @@ import {
   Query,
   ForbiddenException,
   ConflictException,
+  Put,
 } from '@nestjs/common';
 
 import { JWTGuard } from '@authentication/jwt.guard';
@@ -62,7 +63,7 @@ export class OrdersController {
 
   @UseGuards(JWTGuard, RolesGuard)
   @Roles('client')
-  @Post(':id')
+  @Put('request-cancel/:id')
   public async requestCancel(@Param('id') id: string, @Req() { user }) {
     const order = await this.ordersService.findOne(+id);
 
