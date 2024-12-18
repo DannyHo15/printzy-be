@@ -10,6 +10,7 @@ import {
   Req,
   Query,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 
 import { JWTGuard } from '@authentication/jwt.guard';
@@ -20,6 +21,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { FindOrderDto } from './dto/find-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { OrderStatus } from '@app/utils/types/order';
 
 @Controller('orders')
 @ApiTags('orders')
@@ -56,6 +58,26 @@ export class OrdersController {
     }
 
     return order;
+  }
+
+  @UseGuards(JWTGuard, RolesGuard)
+  @Roles('client')
+  @Post(':id')
+  public async requestCancel(@Param('id') id: string, @Req() { user }) {
+    const order = await this.ordersService.findOne(+id);
+
+    if (user.client?.id !== order.client.id) {
+      throw new ForbiddenException();
+    }
+    if (order.status === OrderStatus.PROCESSING) {
+      return this.ordersService.update(+id, {
+        status: OrderStatus.REQUEST_CANCEL,
+      });
+    } else {
+      throw new ConflictException(
+        `Order cannot be canceled because its current status is ${order.status}.`,
+      );
+    }
   }
 
   @UseGuards(JWTGuard, RolesGuard)

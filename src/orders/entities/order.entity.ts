@@ -14,7 +14,6 @@ import { Client } from '@clients/entities/client.entity';
 import { Payment } from '@payments/entities/payment.entity';
 import { OrderStatus } from '@app/utils/types/order';
 import { OrderItem } from './orderItem.entity';
-import { Variant } from '@app/variants/entities/variant.entity';
 
 @Entity({ name: 'orders' })
 export class Order {

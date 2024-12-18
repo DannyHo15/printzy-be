@@ -69,7 +69,7 @@ export class VNPayService {
     switch (responseCode) {
       case '00':
         purchase.status = PurchaseStatus.COMPLETED;
-        order.status = OrderStatus.COMPLETED;
+        order.status = OrderStatus.PROCESSING;
         break;
       case '01':
       case '11':
